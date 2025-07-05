@@ -1,6 +1,45 @@
+
 @RideSharingApp.Api_HostAddress = http://localhost:5062
 
-GET {{RideSharingApp.Api_HostAddress}}/weatherforecast/
+# Login
+POST {{RideSharingApp.Api_HostAddress}}/login
+Content-Type: application/json
+
+{
+  "username": "user",
+  "password": "pass"
+}
+
+###
+
+# Request a Ride
+POST {{RideSharingApp.Api_HostAddress}}/rides/request
+Content-Type: application/json
+Authorization: Bearer {{jwt_token}}
+
+{
+  "origin": "Avenida Paulista, 1000",
+  "destination": "Rua Fictícia, 123",
+  "userId": "00000000-0000-0000-0000-000000000000"
+}
+
+###
+
+# Get Requested Rides
+GET {{RideSharingApp.Api_HostAddress}}/rides/requests
+Authorization: Bearer {{jwt_token}}
 Accept: application/json
+
+###
+
+# Create Subscription
+POST {{RideSharingApp.Api_HostAddress}}/subscriptions
+Content-Type: application/json
+Authorization: Bearer {{jwt_token}}
+
+{
+  "userId": "00000000-0000-0000-0000-000000000000",
+  "plan": "premium"
+}
 
 ###
