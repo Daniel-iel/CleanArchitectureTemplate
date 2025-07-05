@@ -1,8 +1,8 @@
 
-@RideSharingApp.Api_HostAddress = http://localhost:5062
+@RideSharingAppApi_HostAddress = http://localhost:5062
 
 # Login
-POST {{RideSharingApp.Api_HostAddress}}/login
+POST {{RideSharingAppApi_HostAddress}}/login
 Content-Type: application/json
 
 {
@@ -13,9 +13,9 @@ Content-Type: application/json
 ###
 
 # Request a Ride
-POST {{RideSharingApp.Api_HostAddress}}/rides/request
+POST {{RideSharingAppApi_HostAddress}}/rides/request
 Content-Type: application/json
-Authorization: Bearer {{jwt_token}}
+Authorization: Bearer 1231231
 
 {
   "origin": "Avenida Paulista, 1000",
@@ -26,16 +26,16 @@ Authorization: Bearer {{jwt_token}}
 ###
 
 # Get Requested Rides
-GET {{RideSharingApp.Api_HostAddress}}/rides/requests
-Authorization: Bearer {{jwt_token}}
+GET {{RideSharingAppApi_HostAddress}}/rides/requests
+Authorization: Bearer 1231231
 Accept: application/json
 
 ###
 
 # Create Subscription
-POST {{RideSharingApp.Api_HostAddress}}/subscriptions
+POST {{RideSharingAppApi_HostAddress}}/subscriptions
 Content-Type: application/json
-Authorization: Bearer {{jwt_token}}
+Authorization: Bearer 1231231
 
 {
   "userId": "00000000-0000-0000-0000-000000000000",
