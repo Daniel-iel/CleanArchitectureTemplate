@@ -1,4 +1,5 @@
-using FluentValidation;
+using Microsoft.AspNetCore.Mvc;
+using RideSharingApp.Application.Abstractions.Messaging;
 using RideSharingApp.Application.UseCases.Rides.GetRiders;
 using RideSharingApp.Application.UseCases.Rides.RequestRiders;
 
@@ -10,20 +11,13 @@ public static class RideEndpoints
     {
         // Request a Ride (CQRS Command)
         app.MapPost("/rides/request", async (
-            RequestRideCommand command,
-            RequestRideCommandHandler handler,
-            IValidator<RequestRideCommand> validator) =>
+            [FromBody] RequestRideCommand command,
+            ICommandHandler<RequestRideCommand, RequestRideResponse> handler,
+            CancellationToken cancellationToken) =>
         {
-            var dto = new RequestRideCommand(command.PassengerId, command.PickupLocation, command.DropoffLocation);
-            var validation = await validator.ValidateAsync(dto);
-            if (!validation.IsValid)
-            {
-                return Results.BadRequest(validation.Errors);
-            }
-
             try
             {
-                var result = await handler.Handle(command);
+                var result = await handler.HandleAsync(command, cancellationToken);
                 return Results.Ok(result);
             }
             catch (UnauthorizedAccessException)
@@ -39,9 +33,10 @@ public static class RideEndpoints
         // Get Requested Rides (CQRS Query)
         app.MapGet("/rides/requests", async (
            GetRequestedRidesQuery query,
-           GetRequestedRidesQueryHandler handler) =>
+           IQueryHandler<GetRequestedRidesQuery, IEnumerable<RequestedRideResponse>> handler,
+           CancellationToken cancellationToken) =>
         {
-            var result = await handler.HandleAsync(query);
+            var result = await handler.HandleAsync(query, cancellationToken);
             return Results.Ok(result);
         }).RequireAuthorization();
     }

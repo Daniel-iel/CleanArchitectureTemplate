@@ -1,4 +1,5 @@
-using FluentValidation;
+using Microsoft.AspNetCore.Mvc;
+using RideSharingApp.Application.Abstractions.Messaging;
 using RideSharingApp.Application.UseCases.Login;
 
 namespace RideSharingApp.Api.Endpoints;
@@ -8,17 +9,11 @@ public static class LoginEndpoints
     public static void MapLoginEndpoints(this WebApplication app, IConfiguration config)
     {
         app.MapPost("/login", async (
-            LoginCommand command,
-            LoginCommandHandler handler,
-            IValidator<LoginCommand> validator) =>
+            [FromBody] LoginCommand command,
+            ICommandHandler<LoginCommand, LoginResponse> handler,
+            CancellationToken cancellationToken) =>
         {
-            var validation = await validator.ValidateAsync(command);
-            if (!validation.IsValid)
-            {
-                return Results.BadRequest(validation.Errors);
-            }
-
-            var result = await handler.Handle(command);
+            var result = await handler.HandleAsync(command, cancellationToken);
             if (result == null)
             {
                 return Results.Unauthorized();

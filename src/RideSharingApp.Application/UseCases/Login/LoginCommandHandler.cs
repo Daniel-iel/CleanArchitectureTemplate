@@ -1,27 +1,30 @@
 using Microsoft.IdentityModel.Tokens;
+using RideSharingApp.Application.Abstractions.Messaging;
 using RideSharingApp.Application.Common.Interfaces;
+using RideSharingApp.Application.Results;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
 namespace RideSharingApp.Application.UseCases.Login;
 
-public class LoginCommandHandler
+public class LoginCommandHandler : ICommandHandler<LoginCommand, LoginResponse>
 {
     private readonly IUserRepository _userRepo;
     private readonly string _jwtKey;
+
     public LoginCommandHandler(IUserRepository userRepo, string jwtKey)
     {
         _userRepo = userRepo;
         _jwtKey = jwtKey;
     }
 
-    public async Task<LoginResponse?> Handle(LoginCommand command)
+    public async Task<Result<LoginResponse>> HandleAsync(LoginCommand command, CancellationToken cancellationToken)
     {
         var user = await _userRepo.GetByEmailAsync(command.Email);
         if (user == null || user.PasswordHash != command.Password) // Hash check simplificado
         {
-            return null;
+            return Result.Failure<LoginResponse>(Error.NotFound("Login.InvalidCredentials", "Credenciais inválidas."));
         }
 
         // Gerar JWT
@@ -34,6 +37,6 @@ public class LoginCommandHandler
             signingCredentials: creds
         );
         var tokenStr = new JwtSecurityTokenHandler().WriteToken(token);
-        return new LoginResponse(tokenStr);
+        return Result.Success(new LoginResponse(tokenStr));
     }
 }

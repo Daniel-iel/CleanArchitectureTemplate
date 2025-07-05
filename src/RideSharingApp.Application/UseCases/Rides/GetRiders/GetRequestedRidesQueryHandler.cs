@@ -1,9 +1,10 @@
+using RideSharingApp.Application.Abstractions.Messaging;
 using RideSharingApp.Application.Common.Interfaces;
-using RideSharingApp.Application.UseCases.Rides.RequestRiders;
+using RideSharingApp.Application.Results;
 
 namespace RideSharingApp.Application.UseCases.Rides.GetRiders;
 
-public class GetRequestedRidesQueryHandler
+public class GetRequestedRidesQueryHandler : IQueryHandler<GetRequestedRidesQuery, IEnumerable<RequestedRideResponse>>
 {
     private readonly IRideRepository _rideRepo;
     public GetRequestedRidesQueryHandler(IRideRepository rideRepo)
@@ -11,10 +12,14 @@ public class GetRequestedRidesQueryHandler
         _rideRepo = rideRepo;
     }
 
-    public async Task<IEnumerable<RequestedRideResponse>> HandleAsync(GetRequestedRidesQuery query)
+    public async Task<Result<IEnumerable<RequestedRideResponse>>> HandleAsync(GetRequestedRidesQuery query, CancellationToken cancellationToken)
     {
         var rides = await _rideRepo.GetRequestedRidesAsync();
-        return rides.Select(r => new RequestedRideResponse(
+        if (rides == null || !rides.Any())
+        {
+            return Result.Failure<IEnumerable<RequestedRideResponse>>(Error.NotFound("Rides.NoneFound", "Nenhuma corrida encontrada."));
+        }
+        var response = rides.Select(r => new RequestedRideResponse(
             r.Id,
             r.PassengerId,
             r.PickupLocation,
@@ -22,5 +27,6 @@ public class GetRequestedRidesQueryHandler
             r.Status.ToString(),
             r.RequestedAt
         ));
+        return Result.Success(response);
     }
 }

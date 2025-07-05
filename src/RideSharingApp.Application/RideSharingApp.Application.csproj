@@ -8,12 +8,15 @@
 
   <ItemGroup>
     <ProjectReference Include="..\RideSharingApp.Domain\RideSharingApp.Domain.csproj" />
+    <ProjectReference Include="..\RideSharingApp.SharedKernel\RideSharingApp.SharedKernel.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.20.1" />
     <PackageReference Include="FluentValidation" Version="12.0.0" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.0.0" />
     <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.0.1" />
+    <PackageReference Include="Scrutor" Version="6.1.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.0.1" />
   </ItemGroup>
 

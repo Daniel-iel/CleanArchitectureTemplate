@@ -1,5 +1,4 @@
 using Asp.Versioning;
-using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -43,13 +42,6 @@ var config = builder.Configuration;
 //        sp.GetRequiredService<SubscriptionRepository>(),
 //    )
 //);
-
-// FluentValidation
-builder.Services.Scan(scan => scan
-    .FromAssembliesOf(typeof(RideSharingApp.Application.DependecyInjection))
-    .AddClasses(classes => classes.AssignableTo(typeof(IValidator<>)))
-    .AsImplementedInterfaces()
-    .WithSingletonLifetime());
 
 // JWT Auth
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

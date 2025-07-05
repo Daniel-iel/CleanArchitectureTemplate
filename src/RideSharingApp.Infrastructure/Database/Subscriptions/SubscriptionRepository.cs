@@ -1,6 +1,6 @@
 ﻿using Dapper;
-using RideSharingApp.Domain.Subscriptions;
 using RideSharingApp.Application.Common.Interfaces;
+using RideSharingApp.Domain.Subscriptions;
 
 namespace RideSharingApp.Infrastructure.Database.Subscriptions;
 

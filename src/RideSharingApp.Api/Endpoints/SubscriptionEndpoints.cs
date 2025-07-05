@@ -10,7 +10,8 @@ public static class SubscriptionEndpoints
         app.MapPost("/subscriptions", async (
             CreateSubscriptionCommand command,
             CreateSubscriptionCommandHandler handler,
-            IValidator<CreateSubscriptionCommand> validator) =>
+            IValidator<CreateSubscriptionCommand> validator,
+            CancellationToken cancellationToken) =>
         {
             var validation = await validator.ValidateAsync(command);
             if (!validation.IsValid)
@@ -18,7 +19,7 @@ public static class SubscriptionEndpoints
                 return Results.BadRequest(validation.Errors);
             }
 
-            var result = await handler.Handle(command);
+            var result = await handler.HandleAsync(command, cancellationToken);
             return Results.Ok(result);
         }).RequireAuthorization();
     }

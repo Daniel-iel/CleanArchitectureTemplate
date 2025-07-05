@@ -1,8 +1,10 @@
 using RideSharingApp.Application.Common.DispacherEvent;
 using RideSharingApp.Application.Common.Interfaces;
+using RideSharingApp.Application.Results;
 using RideSharingApp.Domain.Rides;
 
 namespace RideSharingApp.Application.UseCases.Rides.RequestRiders;
+
 
 public class RequestRideCommandHandler
 {
@@ -23,19 +25,19 @@ public class RequestRideCommandHandler
         _eventPublisher = eventPublisher;
     }
 
-    public async Task<RideResponse> Handle(RequestRideCommand command)
+    public async Task<Result<RequestRideResponse>> Handle(RequestRideCommand command)
     {
         var user = await _userRepo.GetByIdAsync(command.PassengerId);
         if (user == null)
         {
-            throw new UnauthorizedAccessException();
+            return Result.Failure<RequestRideResponse>(Error.NotFound("User.NotFound", "Usuário não encontrado."));
         }
 
         var subscriptions = await _subRepo.GetByUserIdAsync(user.Id);
         var activeSub = subscriptions.FirstOrDefault(s => s.IsActive);
         if (activeSub == null)
         {
-            throw new InvalidOperationException("No active subscription");
+            return Result.Failure<RequestRideResponse>(Error.Problem("Subscription.NoneActive", "Nenhuma assinatura ativa encontrada."));
         }
 
         var ride = new RideRequest
@@ -51,6 +53,6 @@ public class RequestRideCommandHandler
         var evt = new RideRequestedEvent(created.Id, created.PassengerId, created.PickupLocation, created.DropoffLocation, created.RequestedAt);
 
         await _eventPublisher.PublishAsync(evt);
-        return new RideResponse(created.Id, created.Status.ToString());
+        return Result.Success(new RequestRideResponse(created.Id, created.Status.ToString()));
     }
 }
