@@ -61,6 +61,19 @@ builder.Services.AddAuthorization();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+
+
+// Executa a migration Flyway ao subir a aplicação
+var connectionString = config.GetConnectionString("DefaultConnection");
+if (!string.IsNullOrWhiteSpace(connectionString))
+{
+    RideSharingApp.Infrastructure.Database.MigrateDatabase.RunFlywayMigration(connectionString);
+}
+else
+{
+    Console.WriteLine("A string de conexão para o banco de dados não foi encontrada. Migration não executada.");
+}
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
