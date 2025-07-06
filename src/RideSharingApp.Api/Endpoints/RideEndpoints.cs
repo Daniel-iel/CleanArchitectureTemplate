@@ -7,10 +7,12 @@ namespace RideSharingApp.Api.Endpoints;
 
 public static class RideEndpoints
 {
-    public static void MapRideEndpoints(this WebApplication app)
+    public static IEndpointRouteBuilder MapRideEndpoints(this IEndpointRouteBuilder endpointRouteBuilder)
     {
-        // Request a Ride (CQRS Command)
-        app.MapPost("/rides/request", async (
+        var mapGroup = endpointRouteBuilder
+               .MapGroup("/rides");
+
+        mapGroup.MapPost("/", async (
             [FromBody] RequestRideCommand command,
             ICommandHandler<RequestRideCommand, RequestRideResponse> handler,
             CancellationToken cancellationToken) =>
@@ -30,8 +32,7 @@ public static class RideEndpoints
             }
         }).RequireAuthorization();
 
-        // Get Requested Rides (CQRS Query)
-        app.MapGet("/rides/requests", async (
+        mapGroup.MapGet("/requests", async (
            GetRequestedRidesQuery query,
            IQueryHandler<GetRequestedRidesQuery, IEnumerable<RequestedRideResponse>> handler,
            CancellationToken cancellationToken) =>
@@ -39,5 +40,7 @@ public static class RideEndpoints
             var result = await handler.HandleAsync(query, cancellationToken);
             return Results.Ok(result);
         }).RequireAuthorization();
+
+        return endpointRouteBuilder;
     }
 }

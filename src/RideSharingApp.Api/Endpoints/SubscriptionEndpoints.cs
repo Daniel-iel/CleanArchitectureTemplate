@@ -5,13 +5,16 @@ namespace RideSharingApp.Api.Endpoints;
 
 public static class SubscriptionEndpoints
 {
-    public static void MapSubscriptionEndpoints(this WebApplication app)
+    public static IEndpointRouteBuilder MapSubscriptionsEndpoints(this IEndpointRouteBuilder endpointRouteBuilder)
     {
-        app.MapPost("/subscriptions", async (
-            CreateSubscriptionCommand command,
-            CreateSubscriptionCommandHandler handler,
-            IValidator<CreateSubscriptionCommand> validator,
-            CancellationToken cancellationToken) =>
+        var mapGroup = endpointRouteBuilder
+                .MapGroup("/subscriptions");
+
+        mapGroup.MapPost("/", async (
+          CreateSubscriptionCommand command,
+          CreateSubscriptionCommandHandler handler,
+          IValidator<CreateSubscriptionCommand> validator,
+          CancellationToken cancellationToken) =>
         {
             var validation = await validator.ValidateAsync(command);
             if (!validation.IsValid)
@@ -22,5 +25,7 @@ public static class SubscriptionEndpoints
             var result = await handler.HandleAsync(command, cancellationToken);
             return Results.Ok(result);
         }).RequireAuthorization();
+
+        return endpointRouteBuilder;
     }
 }

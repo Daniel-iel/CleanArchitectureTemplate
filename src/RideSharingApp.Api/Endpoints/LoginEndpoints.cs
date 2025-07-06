@@ -4,22 +4,27 @@ using RideSharingApp.Application.UseCases.Login;
 
 namespace RideSharingApp.Api.Endpoints;
 
-public static class LoginEndpoints
+public static class UserEndpoints
 {
-    public static void MapLoginEndpoints(this WebApplication app, IConfiguration config)
+    public static IEndpointRouteBuilder MapUserEndpoints(this IEndpointRouteBuilder endpointRouteBuilder)
     {
-        app.MapPost("/login", async (
-            [FromBody] LoginCommand command,
-            ICommandHandler<LoginCommand, LoginResponse> handler,
-            CancellationToken cancellationToken) =>
-        {
-            var result = await handler.HandleAsync(command, cancellationToken);
-            if (result == null)
-            {
-                return Results.Unauthorized();
-            }
+        var mapGroup = endpointRouteBuilder
+                .MapGroup("/user");
 
-            return Results.Ok(result);
-        });
+        mapGroup.MapPost("/login", async (
+                [FromBody] LoginCommand command,
+                ICommandHandler<LoginCommand, LoginResponse> handler,
+                CancellationToken cancellationToken) =>
+            {
+                var result = await handler.HandleAsync(command, cancellationToken);
+                if (result == null)
+                {
+                    return Results.Unauthorized();
+                }
+
+                return Results.Ok(result);
+            });
+
+        return endpointRouteBuilder;
     }
 }
