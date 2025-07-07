@@ -5,8 +5,7 @@ using RideSharingApp.Domain.Rides;
 
 namespace RideSharingApp.Application.UseCases.Rides.RequestRiders;
 
-
-public class RequestRideCommandHandler
+public sealed class RequestRideCommandHandler
 {
     private readonly IRideRepository _rideRepo;
     private readonly IUserRepository _userRepo;

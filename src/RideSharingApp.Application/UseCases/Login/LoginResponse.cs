@@ -1,3 +1,3 @@
 namespace RideSharingApp.Application.UseCases.Login;
 
-public record LoginResponse(string Token);
+public sealed record LoginResponse(string Token);

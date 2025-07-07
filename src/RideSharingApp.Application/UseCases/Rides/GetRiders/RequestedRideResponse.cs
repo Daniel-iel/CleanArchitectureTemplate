@@ -1,7 +1,7 @@
 ﻿
 namespace RideSharingApp.Application.UseCases.Rides.GetRiders
 {
-    public class RequestedRideResponse
+    public sealed class RequestedRideResponse
     {
         private Guid id;
         private Guid passengerId;

@@ -4,7 +4,7 @@ using RideSharingApp.Application.Results;
 
 namespace RideSharingApp.Application.UseCases.Rides.GetRiders;
 
-public class GetRequestedRidesQueryHandler : IQueryHandler<GetRequestedRidesQuery, IEnumerable<RequestedRideResponse>>
+public sealed class GetRequestedRidesQueryHandler : IQueryHandler<GetRequestedRidesQuery, IEnumerable<RequestedRideResponse>>
 {
     private readonly IRideRepository _rideRepo;
     public GetRequestedRidesQueryHandler(IRideRepository rideRepo)

@@ -22,7 +22,6 @@ public class UnitOfWork : IUnitOfWork, IDisposable
         _transaction = _connection.BeginTransaction();
     }
 
-
     public Task CommitAsync()
     {
         _transaction?.Commit();

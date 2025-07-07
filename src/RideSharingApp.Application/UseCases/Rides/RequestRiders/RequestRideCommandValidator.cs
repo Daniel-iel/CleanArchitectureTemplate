@@ -2,7 +2,7 @@ using FluentValidation;
 
 namespace RideSharingApp.Application.UseCases.Rides.RequestRiders;
 
-public class RequestRideCommandValidator : AbstractValidator<RequestRideCommand>
+public sealed class RequestRideCommandValidator : AbstractValidator<RequestRideCommand>
 {
     public RequestRideCommandValidator()
     {

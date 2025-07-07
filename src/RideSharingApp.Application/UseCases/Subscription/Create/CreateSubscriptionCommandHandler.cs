@@ -8,7 +8,7 @@ using SubscriptionEntity = RideSharingApp.Domain.Subscriptions.Subscription;
 
 namespace RideSharingApp.Application.UseCases.Subscription.Create;
 
-public class CreateSubscriptionCommandHandler : ICommandHandler<CreateSubscriptionCommand, SubscriptionResponse>
+public sealed class CreateSubscriptionCommandHandler : ICommandHandler<CreateSubscriptionCommand, SubscriptionResponse>
 {
     private readonly ISubscriptionRepository _subRepo;
     private readonly EventPublisher eventPublisher;

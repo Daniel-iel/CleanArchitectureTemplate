@@ -2,7 +2,7 @@ using RideSharingApp.Domain.Subscriptions;
 
 namespace RideSharingApp.Domain.Login;
 
-public class User
+public sealed class User
 {
     public Guid Id { get; set; }
     public string Email { get; set; } = string.Empty;

@@ -2,7 +2,7 @@ using FluentValidation;
 
 namespace RideSharingApp.Application.UseCases.Subscription.Create;
 
-public class CreateSubscriptionCommandValidator : AbstractValidator<CreateSubscriptionCommand>
+public sealed class CreateSubscriptionCommandValidator : AbstractValidator<CreateSubscriptionCommand>
 {
     public CreateSubscriptionCommandValidator()
     {

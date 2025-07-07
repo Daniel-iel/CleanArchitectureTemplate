@@ -8,7 +8,7 @@ using System.Text;
 
 namespace RideSharingApp.Application.UseCases.Login;
 
-public class LoginCommandHandler : ICommandHandler<LoginCommand, LoginResponse>
+public sealed class LoginCommandHandler : ICommandHandler<LoginCommand, LoginResponse>
 {
     private readonly IUserRepository _userRepo;
     private readonly string _jwtKey;
