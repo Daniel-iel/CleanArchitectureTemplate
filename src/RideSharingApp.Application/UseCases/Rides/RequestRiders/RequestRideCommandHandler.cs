@@ -54,10 +54,14 @@ public sealed class RequestRideCommandHandler
                 Status = RideStatus.Requested
             };
 
+            _unitOfWork.BeginTransaction();
+
             var created = await _rideRepo.AddAsync(ride);
 
             var rideRequestedEvent = new RideRequestedEvent(created.Id, created.PassengerId, created.PickupLocation, created.DropoffLocation, created.RequestedAt);
             await _eventPublisher.PublishAsync(rideRequestedEvent);
+
+            _unitOfWork.Commit();
 
             return Result.Success(new RequestRideResponse(created.Id, created.Status.ToString()));
         }
