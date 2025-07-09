@@ -14,6 +14,11 @@ builder.Services
 
 var app = builder.Build();
 
-app.UseApi();
+app.UseSwagger();
+app.UseSwaggerUI();
+app.UseHttpsRedirection();
+app.UseAuthentication();
+app.UseAuthorization();
+app.MapControllers();
 
 await app.RunAsync();

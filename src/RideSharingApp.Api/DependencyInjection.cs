@@ -20,9 +20,10 @@ public static class DependencyInjection
         app.UseAuthentication();
         app.UseAuthorization();
 
-        app.MapUserEndpoints();
-        app.MapSubscriptionsEndpoints();
-        app.MapRideEndpoints();
+        app.MapControllers();
+        // app.MapUserEndpoints();
+        // app.MapSubscriptionsEndpoints();
+        // app.MapRideEndpoints();
 
         return app;
     }
@@ -30,6 +31,9 @@ public static class DependencyInjection
     public static IServiceCollection AddApi(this IServiceCollection services, IConfiguration configuration)
     {
         services
+            .AddControllers();
+            
+        services            
             .AddVersion(configuration)
             .AddAuth()
             .AddSwaggerGen();
@@ -69,15 +73,9 @@ public static class DependencyInjection
                 new HeaderApiVersionReader("x-api-version"),
                 new MediaTypeApiVersionReader("x-api-version")
             );
+            options.ApiVersionReader = new Asp.Versioning.UrlSegmentApiVersionReader();
         })
-       .AddMvc()
-       .AddApiExplorer(options =>
-       {
-           options.GroupNameFormat = "'v'VVV";
-           options.SubstituteApiVersionInUrl = true;
-       });
-
-        services.AddEndpointsApiExplorer();
+       .AddMvc();   
 
         return services;
     }
