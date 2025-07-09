@@ -1,49 +1,31 @@
-using System.Data;
-using System.Threading.Tasks;
-using Microsoft.Data.SqlClient;
-
 namespace RideSharingApp.Infrastructure.Database;
 
-public class UnitOfWork : IUnitOfWork, IDisposable
+public sealed class UnitOfWork : IUnitOfWork, IDisposable
 {
-    private readonly string _connectionString;
-    private IDbConnection? _connection;
-    private IDbTransaction? _transaction;
+    private IConnection _connection;
 
-    public UnitOfWork(string connectionString)
+    public UnitOfWork(IConnection connection)
     {
-        _connectionString = connectionString;
+        _connection = connection;
     }
 
-    public async Task BeginAsync()
+    public void BeginTransaction()
     {
-        _connection = new SqlConnection(_connectionString);
-        await ((SqlConnection)_connection).OpenAsync();
-        _transaction = _connection.BeginTransaction();
+        _connection.Transaction = _connection.DbConnection.BeginTransaction();
     }
 
-    public Task CommitAsync()
+    public void Commit()
     {
-        _transaction?.Commit();
-        Dispose();
-        return Task.CompletedTask;
+        _connection.Transaction.Commit();
     }
 
-    public Task RollbackAsync()
+    public void Rollback()
     {
-        _transaction?.Rollback();
-        Dispose();
-        return Task.CompletedTask;
+        _connection.Transaction.Rollback();
     }
 
     public void Dispose()
     {
-        _transaction?.Dispose();
-        _transaction = null;
-        _connection?.Dispose();
-        _connection = null;
+        _connection.Transaction?.Dispose();
     }
-
-    public IDbConnection Connection => _connection ?? throw new InvalidOperationException("UnitOfWork connection is not initialized.");
-    public IDbTransaction Transaction => _transaction ?? throw new InvalidOperationException("UnitOfWork transaction is not initialized.");
 }
