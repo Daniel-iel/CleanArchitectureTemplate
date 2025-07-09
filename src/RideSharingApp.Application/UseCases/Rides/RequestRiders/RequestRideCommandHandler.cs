@@ -28,7 +28,7 @@ public sealed class RequestRideCommandHandler
         _eventPublisher = eventPublisher;
     }
 
-    public async Task<Result<RequestRideResponse>> Handle(RequestRideCommand command)
+    public async Task<Result<RequestRideResponse>> HandleAsync(RequestRideCommand command)
     {
         var user = await _userRepo.GetByIdAsync(command.PassengerId);
         if (user == null)
