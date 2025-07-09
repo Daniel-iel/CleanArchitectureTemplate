@@ -1,0 +1,7 @@
+- name: acesso_dados
+  message: Deseja configurar qual banco de dados?
+  type: checkbox
+  choices:
+    - Mongo
+    - SQLServer
+    - PostgreSQL
