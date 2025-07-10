@@ -1,9 +1,9 @@
+using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RideSharingApp.Application.Abstractions.Messaging;
 using RideSharingApp.Application.UseCases.Rides.GetRiders;
 using RideSharingApp.Application.UseCases.Rides.RequestRiders;
-using Asp.Versioning;
 
 namespace RideSharingApp.Api.Controllers;
 
@@ -25,7 +25,7 @@ public class RidesController : ControllerBase
 
     [HttpPost]
     [Authorize]
-    public async Task<IActionResult> RequestRide([FromBody] RequestRideCommand command, CancellationToken cancellationToken)
+    public async Task<IActionResult> RequestRideAsync([FromBody] RequestRideCommand command, CancellationToken cancellationToken)
     {
         try
         {
@@ -44,7 +44,7 @@ public class RidesController : ControllerBase
 
     [HttpGet("requests")]
     [Authorize]
-    public async Task<IActionResult> GetRequestedRides([FromQuery] GetRequestedRidesQuery query, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetRequestedRidesAsync([FromQuery] GetRequestedRidesQuery query, CancellationToken cancellationToken)
     {
         var result = await _getHandler.HandleAsync(query, cancellationToken);
         return Ok(result);

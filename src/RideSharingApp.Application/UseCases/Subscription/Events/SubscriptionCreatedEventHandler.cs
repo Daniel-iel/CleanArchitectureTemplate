@@ -12,7 +12,7 @@ public sealed class SubscriptionCreatedEventHandler
         this.serviceBusClient = serviceBusClient;
     }
 
-    public Task Handle(SubscriptionCreatedEvent subscriptionCreatedEvent)
+    public Task HandleAsync(SubscriptionCreatedEvent subscriptionCreatedEvent)
     {
         // Handle the subscription created event, e.g., log it, notify users, etc.
         var sender = serviceBusClient.CreateSender("_topicName");

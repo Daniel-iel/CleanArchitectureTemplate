@@ -17,7 +17,7 @@ public class LoginController : ControllerBase
     }
 
     [HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody] LoginCommand command, CancellationToken cancellationToken)
+    public async Task<IActionResult> LoginAsync([FromBody] LoginCommand command, CancellationToken cancellationToken)
     {
         var result = await _handler.HandleAsync(command, cancellationToken);
         if (result == null)

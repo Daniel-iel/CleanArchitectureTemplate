@@ -22,7 +22,7 @@ public class SubscriptionsController : ControllerBase
 
     [HttpPost]
     [Authorize]
-    public async Task<IActionResult> Create([FromBody] CreateSubscriptionCommand command, CancellationToken cancellationToken)
+    public async Task<IActionResult> CreateAsync([FromBody] CreateSubscriptionCommand command, CancellationToken cancellationToken)
     {
         var validation = await _validator.ValidateAsync(command);
         if (!validation.IsValid)
