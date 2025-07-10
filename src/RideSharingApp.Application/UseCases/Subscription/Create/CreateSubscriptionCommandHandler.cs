@@ -1,9 +1,8 @@
 using RideSharingApp.Application.Abstractions.Messaging;
-using RideSharingApp.Application.Common.DispacherEvent;
 using RideSharingApp.Application.Common.Interfaces;
-using RideSharingApp.Application.Results;
 using RideSharingApp.Domain.Subscriptions;
-
+using RideSharingApp.SharedKernel.DispacherEvent;
+using RideSharingApp.SharedKernel.Results;
 using SubscriptionEntity = RideSharingApp.Domain.Subscriptions.Subscription;
 
 namespace RideSharingApp.Application.UseCases.Subscription.Create;

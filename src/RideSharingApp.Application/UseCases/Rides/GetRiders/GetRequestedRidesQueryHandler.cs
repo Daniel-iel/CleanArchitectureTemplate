@@ -1,6 +1,6 @@
 using RideSharingApp.Application.Abstractions.Messaging;
 using RideSharingApp.Application.Common.Interfaces;
-using RideSharingApp.Application.Results;
+using RideSharingApp.SharedKernel.Results;
 
 namespace RideSharingApp.Application.UseCases.Rides.GetRiders;
 

@@ -28,10 +28,20 @@ namespace RideSharingApp.Arch.Tests
         [Fact]
         public void Application_Should_Not_Depend_On_Infrastructure_Or_Api()
         {
-            var application = Types().That().ResideInNamespace("RideSharingApp.Application", true);
-            var forbidden = Types().That().ResideInNamespace("RideSharingApp.Infrastructure", true)
-                .Or().ResideInNamespace("RideSharingApp.Api", true);
-            application.Should().NotDependOnAny(forbidden).Check(Architecture);
+            var application = Types()
+                .That()
+                .ResideInNamespace("RideSharingApp.Application", true);
+
+            var forbidden = Types()
+                .That()
+                .ResideInNamespace("RideSharingApp.Infrastructure", true)
+                .Or()
+                .ResideInNamespace("RideSharingApp.Api", true);
+
+            application
+                .Should()
+                .NotDependOnAny(forbidden)
+                .Check(Architecture);
         }
 
         [Fact]

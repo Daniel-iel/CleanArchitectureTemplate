@@ -1,3 +1,5 @@
+using RideSharingApp.Application.Common.Interfaces;
+
 namespace RideSharingApp.Infrastructure.Database;
 
 public sealed class UnitOfWork : IUnitOfWork, IDisposable

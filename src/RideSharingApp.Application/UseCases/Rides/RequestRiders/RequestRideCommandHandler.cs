@@ -1,8 +1,7 @@
-using RideSharingApp.Application.Common.DispacherEvent;
 using RideSharingApp.Application.Common.Interfaces;
-using RideSharingApp.Application.Results;
 using RideSharingApp.Domain.Rides;
-using RideSharingApp.Infrastructure.Database;
+using RideSharingApp.SharedKernel.DispacherEvent;
+using RideSharingApp.SharedKernel.Results;
 
 namespace RideSharingApp.Application.UseCases.Rides.RequestRiders;
 

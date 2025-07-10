@@ -1,4 +1,4 @@
-namespace RideSharingApp.Infrastructure.Database;
+namespace RideSharingApp.Application.Common.Interfaces;
 public interface IUnitOfWork
 {
     void BeginTransaction();

@@ -6,6 +6,7 @@ using RideSharingApp.Infrastructure.Database.Login;
 using RideSharingApp.Infrastructure.Database.Rides;
 using RideSharingApp.Infrastructure.Database.Settings;
 using RideSharingApp.Infrastructure.Database.Subscriptions;
+using RideSharingApp.Infrastructure.Migrations;
 
 namespace RideSharingApp.Infrastructure;
 

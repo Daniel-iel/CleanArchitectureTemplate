@@ -1,7 +1,7 @@
 using Microsoft.IdentityModel.Tokens;
 using RideSharingApp.Application.Abstractions.Messaging;
 using RideSharingApp.Application.Common.Interfaces;
-using RideSharingApp.Application.Results;
+using RideSharingApp.SharedKernel.Results;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;

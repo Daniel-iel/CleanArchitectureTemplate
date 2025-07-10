@@ -1,6 +1,6 @@
 using System.Diagnostics;
 
-namespace RideSharingApp.Infrastructure.Database
+namespace RideSharingApp.Infrastructure.Migrations
 {
     public static class MigrateDatabase
     {

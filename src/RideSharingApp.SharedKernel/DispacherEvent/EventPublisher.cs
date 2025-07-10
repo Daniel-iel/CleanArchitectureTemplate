@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 
-namespace RideSharingApp.Application.Common.DispacherEvent;
+namespace RideSharingApp.SharedKernel.DispacherEvent;
 
 public class EventPublisher
 {

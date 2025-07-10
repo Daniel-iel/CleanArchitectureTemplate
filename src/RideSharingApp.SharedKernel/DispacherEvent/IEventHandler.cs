@@ -1,4 +1,4 @@
-namespace RideSharingApp.Application.Common.DispacherEvent;
+namespace RideSharingApp.SharedKernel.DispacherEvent;
 
 public interface IEventHandler<TEvent>
 {

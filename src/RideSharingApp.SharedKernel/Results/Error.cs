@@ -1,4 +1,4 @@
-namespace RideSharingApp.Application.Results;
+namespace RideSharingApp.SharedKernel.Results;
 
 public record Error
 {

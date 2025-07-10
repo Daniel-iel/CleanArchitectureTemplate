@@ -1,4 +1,4 @@
-﻿using RideSharingApp.Application.Results;
+﻿using RideSharingApp.SharedKernel.Results;
 
 namespace RideSharingApp.Application.Abstractions.Messaging;
 

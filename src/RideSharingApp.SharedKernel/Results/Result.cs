@@ -1,6 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 
-namespace RideSharingApp.Application.Results;
+namespace RideSharingApp.SharedKernel.Results;
 
 public class Result
 {
