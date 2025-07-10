@@ -1,7 +1,6 @@
 ﻿using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using RideSharingApp.Api.Endpoints;
 using System.Text;
 
 namespace RideSharingApp.Api;
@@ -32,8 +31,8 @@ public static class DependencyInjection
     {
         services
             .AddControllers();
-            
-        services            
+
+        services
             .AddVersion(configuration)
             .AddAuth()
             .AddSwaggerGen();
@@ -75,7 +74,7 @@ public static class DependencyInjection
             );
             options.ApiVersionReader = new Asp.Versioning.UrlSegmentApiVersionReader();
         })
-       .AddMvc();   
+       .AddMvc();
 
         return services;
     }
