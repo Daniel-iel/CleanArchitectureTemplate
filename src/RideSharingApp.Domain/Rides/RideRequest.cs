@@ -8,14 +8,6 @@ public class RideRequest
     public string DropoffLocation { get; set; } = string.Empty;
     public DateTime RequestedAt { get; set; } = DateTime.UtcNow;
     public Guid? DriverId { get; set; }
+    public decimal EstimatedCost { get; set; } = 0.0m;
     public RideStatus Status { get; set; } = RideStatus.Requested;
-}
-
-public enum RideStatus
-{
-    Requested,
-    Accepted,
-    InProgress,
-    Completed,
-    Cancelled
 }

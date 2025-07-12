@@ -31,4 +31,8 @@
     <PackageReference Include="ZLinq" Version="1.5.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Common\Interfaces\Repositories\" />
+  </ItemGroup>
+
 </Project>

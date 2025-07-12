@@ -12,19 +12,22 @@ public sealed class RequestRideCommandHandler
     private readonly IUserRepository _userRepo;
     private readonly ISubscriptionRepository _subRepo;
     private readonly EventPublisher _eventPublisher;
+    private readonly RideSharingApp.Infrastructure.Currency.ICurrencyQuotationService _currencyService;
 
     public RequestRideCommandHandler(
         IUnitOfWork unitOfWork,
         IRideRepository rideRepo,
         IUserRepository userRepo,
         ISubscriptionRepository subRepo,
-        EventPublisher eventPublisher)
+        EventPublisher eventPublisher,
+        RideSharingApp.Infrastructure.Currency.ICurrencyQuotationService currencyService)
     {
         _unitOfWork = unitOfWork;
         _rideRepo = rideRepo;
         _userRepo = userRepo;
         _subRepo = subRepo;
         _eventPublisher = eventPublisher;
+        _currencyService = currencyService;
     }
 
     public async Task<Result<RequestRideResponse>> HandleAsync(RequestRideCommand command)
@@ -44,13 +47,22 @@ public sealed class RequestRideCommandHandler
 
         try
         {
+            // Chama API externa para cotação do dólar
+            var dollarQuotation = await _currencyService.GetDollarQuotationAsync();
+            if (dollarQuotation == null)
+            {
+                return Result.Failure<RequestRideResponse>(Error.Problem("CurrencyApi.Failed", "Não foi possível obter a cotação do dólar."));
+            }
+
             var ride = new RideRequest
             {
                 PassengerId = command.PassengerId,
                 PickupLocation = command.PickupLocation,
                 DropoffLocation = command.DropoffLocation,
                 RequestedAt = DateTime.UtcNow,
-                Status = RideStatus.Requested
+                Status = RideStatus.Requested,
+                // Exemplo: Preço fictício baseado na cotação
+                EstimatedCost = 10 * dollarQuotation.Value
             };
 
             _unitOfWork.BeginTransaction();
