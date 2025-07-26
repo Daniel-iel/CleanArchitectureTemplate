@@ -11,7 +11,6 @@ using RideSharingApp.Infrastructure.Database.Login;
 using RideSharingApp.Infrastructure.Database.Rides;
 using RideSharingApp.Infrastructure.Database.Settings;
 using RideSharingApp.Infrastructure.Database.Subscriptions;
-using RideSharingApp.Infrastructure.Migrations;
 using System.Net;
 using System.Threading.RateLimiting;
 
@@ -118,15 +117,7 @@ public static class DependencyInjection
     private static IServiceCollection AddMigration(this IServiceCollection services, IConfiguration configuration)
     {
         // Executa a migration Flyway ao subir a aplicação
-        var connectionString = configuration.GetConnectionString("DefaultConnection");
-        if (!string.IsNullOrWhiteSpace(connectionString))
-        {
-            MigrateDatabase.RunFlywayMigration(connectionString);
-        }
-        else
-        {
-            Console.WriteLine("A string de conexão para o banco de dados não foi encontrada. Migration não executada.");
-        }
+        RideSharingApp.Infrastructure.Database.DbUpMigrator.RunMigration(configuration);
 
         return services;
     }

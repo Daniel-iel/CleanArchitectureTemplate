@@ -1,15 +1,14 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using RideSharingApp.SharedKernel.DispacherEvent;
 
-namespace RideSharingApp.SharedKernel
+namespace RideSharingApp.SharedKernel;
+
+public static class DependecyInjection
 {
-    public static class DependecyInjection
+    public static IServiceCollection AddSharedKernel(this IServiceCollection services)
     {
-        public static IServiceCollection AddSharedKernel(this IServiceCollection services)
-        {
-            // Register shared kernel services here, if any
-            // For example, logging, caching, etc.
+        services.AddTransient<IEventPublisher, EventPublisher>();
 
-            return services;
-        }
+        return services;
     }
 }

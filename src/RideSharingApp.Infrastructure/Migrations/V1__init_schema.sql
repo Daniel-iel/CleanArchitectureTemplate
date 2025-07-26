@@ -1,36 +1,36 @@
 -- Flyway Migration: Initial schema for RideSharingApp
 -- Database: PostgreSQL
 
--- Users table
 CREATE TABLE IF NOT EXISTS users (
-    id UUID PRIMARY KEY,
-    username VARCHAR(100) NOT NULL UNIQUE,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     email VARCHAR(255) NOT NULL UNIQUE,
-    password_hash VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP NOT NULL DEFAULT NOW()
+    password_hash VARCHAR(255) NOT NULL
 );
 
--- Rides table
 CREATE TABLE IF NOT EXISTS rides (
-    id UUID PRIMARY KEY,
-    user_id UUID NOT NULL,
-    origin VARCHAR(255) NOT NULL,
-    destination VARCHAR(255) NOT NULL,
-    requested_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    passenger_id UUID NOT NULL,
+    pickup_location VARCHAR(255) NOT NULL,
+    dropoff_location VARCHAR(255) NOT NULL,
+    requested_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    driver_id UUID,
+    estimated_cost NUMERIC(12,2) NOT NULL DEFAULT 0.0,
     status VARCHAR(50) NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES users(id)
+    FOREIGN KEY (passenger_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (driver_id) REFERENCES users(id) ON DELETE SET NULL
 );
 
--- Subscriptions table
 CREATE TABLE IF NOT EXISTS subscriptions (
-    id UUID PRIMARY KEY,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID NOT NULL,
-    plan VARCHAR(100) NOT NULL,
-    started_at TIMESTAMP NOT NULL DEFAULT NOW(),
-    expires_at TIMESTAMP NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES users(id)
+    start_date TIMESTAMPTZ NOT NULL,
+    end_date TIMESTAMPTZ,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 -- Indexes for performance
-CREATE INDEX IF NOT EXISTS idx_rides_user_id ON rides(user_id);
+CREATE INDEX IF NOT EXISTS idx_rides_passenger_id ON rides(passenger_id);
 CREATE INDEX IF NOT EXISTS idx_subscriptions_user_id ON subscriptions(user_id);
+
+-- Extension for UUID generation (if not exists)
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";

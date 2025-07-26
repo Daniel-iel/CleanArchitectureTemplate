@@ -11,12 +11,10 @@ namespace RideSharingApp.Application.UseCases.Login;
 public sealed class LoginCommandHandler : ICommandHandler<LoginCommand, LoginResponse>
 {
     private readonly IUserRepository _userRepo;
-    private readonly string _jwtKey;
 
-    public LoginCommandHandler(IUserRepository userRepo, string jwtKey)
+    public LoginCommandHandler(IUserRepository userRepo)
     {
         _userRepo = userRepo;
-        _jwtKey = jwtKey;
     }
 
     public async Task<Result<LoginResponse>> HandleAsync(LoginCommand command, CancellationToken cancellationToken)
@@ -29,7 +27,7 @@ public sealed class LoginCommandHandler : ICommandHandler<LoginCommand, LoginRes
 
         // Gerar JWT
         var claims = new[] { new Claim("sub", user.Id.ToString()) };
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtKey));
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("a8u6bYtMJKcfzqnCVmtOnRhEcbZCT7dYZlddkgQHxVE="));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
         var token = new JwtSecurityToken(
             claims: claims,

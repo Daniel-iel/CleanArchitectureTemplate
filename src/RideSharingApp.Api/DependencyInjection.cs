@@ -20,9 +20,6 @@ public static class DependencyInjection
         app.UseAuthorization();
 
         app.MapControllers();
-        // app.MapUserEndpoints();
-        // app.MapSubscriptionsEndpoints();
-        // app.MapRideEndpoints();
 
         return app;
     }
@@ -42,7 +39,8 @@ public static class DependencyInjection
 
     private static IServiceCollection AddVersion(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        services
+            .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
           .AddJwtBearer(options =>
           {
               options.TokenValidationParameters = new TokenValidationParameters

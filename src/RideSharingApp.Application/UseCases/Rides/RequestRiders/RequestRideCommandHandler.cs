@@ -11,7 +11,7 @@ public sealed class RequestRideCommandHandler
     private readonly IRideRepository _rideRepo;
     private readonly IUserRepository _userRepo;
     private readonly ISubscriptionRepository _subRepo;
-    private readonly EventPublisher _eventPublisher;
+    private readonly IEventPublisher _eventPublisher;
     private readonly RideSharingApp.Infrastructure.Currency.ICurrencyQuotationService _currencyService;
 
     public RequestRideCommandHandler(
@@ -19,7 +19,7 @@ public sealed class RequestRideCommandHandler
         IRideRepository rideRepo,
         IUserRepository userRepo,
         ISubscriptionRepository subRepo,
-        EventPublisher eventPublisher,
+        IEventPublisher eventPublisher,
         RideSharingApp.Infrastructure.Currency.ICurrencyQuotationService currencyService)
     {
         _unitOfWork = unitOfWork;
@@ -61,16 +61,15 @@ public sealed class RequestRideCommandHandler
                 DropoffLocation = command.DropoffLocation,
                 RequestedAt = DateTime.UtcNow,
                 Status = RideStatus.Requested,
-                // Exemplo: Preço fictício baseado na cotação
-                EstimatedCost = 10 * dollarQuotation.Value
+                EstimatedCost = 10 * dollarQuotation.Value, // ajuste conforme regra de negócio
+                DriverId = null // ou atribua conforme lógica de matching
             };
-
-            _unitOfWork.BeginTransaction();
 
             var created = await _rideRepo.AddAsync(ride);
 
             var rideRequestedEvent = new RideRequestedEvent(created.Id, created.PassengerId, created.PickupLocation, created.DropoffLocation, created.RequestedAt);
-            await _eventPublisher.PublishAsync(rideRequestedEvent);
+
+            await _eventPublisher.DispatchAsync(rideRequestedEvent);
 
             _unitOfWork.Commit();
 

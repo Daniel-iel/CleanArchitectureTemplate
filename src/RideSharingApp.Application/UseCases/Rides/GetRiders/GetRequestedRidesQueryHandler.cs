@@ -24,6 +24,8 @@ public sealed class GetRequestedRidesQueryHandler : IQueryHandler<GetRequestedRi
             r.PassengerId,
             r.PickupLocation,
             r.DropoffLocation,
+            r.DriverId,
+            r.EstimatedCost,
             r.Status.ToString(),
             r.RequestedAt
         ));

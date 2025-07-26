@@ -10,9 +10,9 @@ namespace RideSharingApp.Application.UseCases.Subscription.Create;
 public sealed class CreateSubscriptionCommandHandler : ICommandHandler<CreateSubscriptionCommand, SubscriptionResponse>
 {
     private readonly ISubscriptionRepository _subRepo;
-    private readonly EventPublisher eventPublisher;
+    private readonly IEventPublisher eventPublisher;
 
-    public CreateSubscriptionCommandHandler(ISubscriptionRepository subRepo, EventPublisher eventPublisher)
+    public CreateSubscriptionCommandHandler(ISubscriptionRepository subRepo, IEventPublisher eventPublisher)
     {
         _subRepo = subRepo;
         this.eventPublisher = eventPublisher;
@@ -28,7 +28,7 @@ public sealed class CreateSubscriptionCommandHandler : ICommandHandler<CreateSub
             return Result.Failure<SubscriptionResponse>(Error.Problem("Subscription.CreationFailed", "Falha ao criar assinatura."));
         }
 
-        await eventPublisher.PublishAsync(new SubscriptionCreatedEvent(created.Id, created.UserId, DateTime.UtcNow));
+        await eventPublisher.DispatchAsync(new SubscriptionCreatedEvent(created.Id, created.UserId, DateTime.UtcNow), cancellationToken);
 
         return Result.Success(new SubscriptionResponse(created.Id));
     }
