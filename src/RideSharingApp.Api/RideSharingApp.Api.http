@@ -1,21 +1,17 @@
-
 @RideSharingAppApi_HostAddress = http://localhost:5062
 
-# Login
-POST {{RideSharingAppApi_HostAddress}}/login
-Content-Type: application/json
+# Login via Keycloak (token endpoint)
+POST http://localhost:8080/realms/templateAuth/protocol/openid-connect/token
+Content-Type: application/x-www-form-urlencoded
 
-{
-  "username": "user",
-  "password": "pass"
-}
+username=testuser&password=testpassword&grant_type=password&client_id=ridesharing-api&client_secret=ridesharing-secret
 
 ###
 
 # Request a Ride
-POST {{RideSharingAppApi_HostAddress}}/rides/request
+POST {{RideSharingAppApi_HostAddress}}/api/v1/rides/request
 Content-Type: application/json
-Authorization: Bearer 1231231
+Authorization: Bearer 
 
 {
   "origin": "Avenida Paulista, 1000",
@@ -26,16 +22,16 @@ Authorization: Bearer 1231231
 ###
 
 # Get Requested Rides
-GET {{RideSharingAppApi_HostAddress}}/rides/requests
-Authorization: Bearer 1231231
+GET {{RideSharingAppApi_HostAddress}}/api/v1/rides/requests
+Authorization: Bearer 
 Accept: application/json
 
 ###
 
 # Create Subscription
-POST {{RideSharingAppApi_HostAddress}}/subscriptions
+POST {{RideSharingAppApi_HostAddress}}/api/v1/subscriptions
 Content-Type: application/json
-Authorization: Bearer 1231231
+Authorization: Bearer 
 
 {
   "userId": "00000000-0000-0000-0000-000000000000",

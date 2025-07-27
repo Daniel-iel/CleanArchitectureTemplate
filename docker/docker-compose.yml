@@ -19,3 +19,25 @@ services:
       retries: 5
 volumes:
   pgdata:
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:24.0.3
+    container_name: ridesharing_keycloak
+    restart: always
+    environment:
+      KC_DB: postgres
+      KC_DB_URL_HOST: postgres
+      KC_DB_URL_DATABASE: ridesharingdb
+      KC_DB_USERNAME: postgres
+      KC_DB_PASSWORD: postgres
+      KC_HEALTH_ENABLED: true
+      KC_METRICS_ENABLED: true
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    command: start-dev --import-realm
+    volumes:
+      - ./keycloak/realm-templateAuth.json:/opt/keycloak/data/import/realm-templateAuth.json

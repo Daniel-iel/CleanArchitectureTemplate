@@ -30,35 +30,42 @@ public static class DependencyInjection
             .AddControllers();
 
         services
-            .AddVersion(configuration)
-            .AddAuth()
+            .AddAuth(configuration)
+            .AddVersioning()
             .AddSwaggerGen();
 
         return services;
     }
 
-    private static IServiceCollection AddVersion(this IServiceCollection services, IConfiguration configuration)
+    private static IServiceCollection AddAuth(this IServiceCollection services, IConfiguration configuration)
     {
+        // TODO: Migrar para class
+        var keycloakUrl = configuration["Keycloak:Url"] ?? "http://localhost:8080";
+        var realm = configuration["Keycloak:Realm"] ?? "templateAuth";
+        var audience = configuration["Keycloak:ClientId"] ?? "ridesharing-api";
+
         services
             .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-          .AddJwtBearer(options =>
-          {
-              options.TokenValidationParameters = new TokenValidationParameters
-              {
-                  ValidateIssuer = false,
-                  ValidateAudience = false,
-                  ValidateLifetime = true,
-                  ValidateIssuerSigningKey = true,
-                  IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"] ?? "supersecretkey"))
-              };
-          });
+            .AddJwtBearer(options =>
+            {
+                options.Authority = $"{keycloakUrl}/realms/{realm}";
+                options.Audience = audience;
+                options.RequireHttpsMetadata = false;
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true
+                };
+            });
 
         services.AddAuthorization();
 
         return services;
     }
 
-    private static IServiceCollection AddAuth(this IServiceCollection services)
+    private static IServiceCollection AddVersioning(this IServiceCollection services)
     {
         services.AddApiVersioning(options =>
         {
