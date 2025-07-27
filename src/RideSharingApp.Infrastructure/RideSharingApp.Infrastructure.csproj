@@ -1,10 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <ItemGroup>
-    <ProjectReference Include="..\RideSharingApp.Application\RideSharingApp.Application.csproj" />
-    <ProjectReference Include="..\RideSharingApp.Domain\RideSharingApp.Domain.csproj" />
-
-  </ItemGroup>
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
 
   <ItemGroup>
     <!--{CHAVE}-->
@@ -32,10 +32,9 @@
     </None>
   </ItemGroup>
 
-  <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\RideSharingApp.Application\RideSharingApp.Application.csproj" />
+    <ProjectReference Include="..\RideSharingApp.Domain\RideSharingApp.Domain.csproj" />
+  </ItemGroup>
 
 </Project>
