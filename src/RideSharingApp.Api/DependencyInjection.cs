@@ -1,7 +1,7 @@
 ﻿using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using System.Text;
+using RideSharingApp.Api.Middlewares;
 
 namespace RideSharingApp.Api;
 
@@ -20,6 +20,8 @@ public static class DependencyInjection
         app.UseAuthorization();
 
         app.MapControllers();
+
+        app.UseMiddleware<SecurityHeadersMiddleware>();
 
         return app;
     }
