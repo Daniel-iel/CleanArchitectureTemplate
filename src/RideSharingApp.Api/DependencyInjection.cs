@@ -1,5 +1,6 @@
 ﻿using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.IdentityModel.Tokens;
 using RideSharingApp.Api.Middlewares;
 
@@ -34,7 +35,8 @@ public static class DependencyInjection
         services
             .AddAuth(configuration)
             .AddVersioning()
-            .AddSwaggerGen();
+            .AddSwaggerGen()
+            .AddCompression();
 
         return services;
     }
@@ -97,6 +99,22 @@ public static class DependencyInjection
                 Description = "API for Ride Sharing Application"
             });
         });
+        return services;
+    }
+
+    private static IServiceCollection AddCompression(this IServiceCollection services)
+    {
+        services
+            .AddResponseCompression(options =>
+            {
+                options.EnableForHttps = true;
+                options.Providers.Add<GzipCompressionProvider>();
+            })
+            .Configure<GzipCompressionProviderOptions>(options =>
+            {
+                options.Level = System.IO.Compression.CompressionLevel.Optimal;
+            });
+
         return services;
     }
 }
