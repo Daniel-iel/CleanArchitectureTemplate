@@ -23,7 +23,10 @@ public static class DependencyInjection
 
         app.MapControllers();
 
-        app.UseMiddleware<SecurityHeadersMiddleware>();
+        app
+            .UseMiddleware<SecurityHeadersMiddleware>()
+            .UseMiddleware<CorrelationIdMiddleware>()
+            .UseMiddleware<GlobalExceptionMiddleware>();
 
         return app;
     }
