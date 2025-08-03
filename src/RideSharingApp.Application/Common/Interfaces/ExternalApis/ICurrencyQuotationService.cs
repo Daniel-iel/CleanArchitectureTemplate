@@ -1,4 +1,4 @@
-namespace RideSharingApp.Infrastructure.Currency
+namespace RideSharingApp.Application.Common.Interfaces.ExternalApis
 {
     public interface ICurrencyQuotationService
     {

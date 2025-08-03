@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using RideSharingApp.Application.Common.Interfaces.ExternalApis;
 using System.Text.Json;
 
 namespace RideSharingApp.Infrastructure.Currency

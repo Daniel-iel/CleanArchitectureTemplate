@@ -1,7 +1,7 @@
 using DbUp;
 using Microsoft.Extensions.Configuration;
 
-namespace RideSharingApp.Infrastructure.Database
+namespace RideSharingApp.Infrastructure.Migrations
 {
     public static class DbUpMigrator
     {

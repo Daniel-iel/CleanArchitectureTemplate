@@ -1,4 +1,5 @@
 using RideSharingApp.Application.Common.Interfaces;
+using RideSharingApp.Application.Common.Interfaces.ExternalApis;
 using RideSharingApp.Domain.Rides;
 using RideSharingApp.SharedKernel.DispacherEvent;
 using RideSharingApp.SharedKernel.Results;
@@ -12,7 +13,7 @@ public sealed class RequestRideCommandHandler
     private readonly IUserRepository _userRepo;
     private readonly ISubscriptionRepository _subRepo;
     private readonly IEventPublisher _eventPublisher;
-    private readonly RideSharingApp.Infrastructure.Currency.ICurrencyQuotationService _currencyService;
+    private readonly ICurrencyQuotationService _currencyService;
 
     public RequestRideCommandHandler(
         IUnitOfWork unitOfWork,
@@ -20,7 +21,7 @@ public sealed class RequestRideCommandHandler
         IUserRepository userRepo,
         ISubscriptionRepository subRepo,
         IEventPublisher eventPublisher,
-        RideSharingApp.Infrastructure.Currency.ICurrencyQuotationService currencyService)
+        ICurrencyQuotationService currencyService)
     {
         _unitOfWork = unitOfWork;
         _rideRepo = rideRepo;

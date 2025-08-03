@@ -5,12 +5,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Http.Resilience;
 using Polly;
 using RideSharingApp.Application.Common.Interfaces;
+using RideSharingApp.Application.Common.Interfaces.ExternalApis;
 using RideSharingApp.Infrastructure.Currency;
 using RideSharingApp.Infrastructure.Database;
 using RideSharingApp.Infrastructure.Database.Login;
 using RideSharingApp.Infrastructure.Database.Rides;
 using RideSharingApp.Infrastructure.Database.Settings;
 using RideSharingApp.Infrastructure.Database.Subscriptions;
+using RideSharingApp.Infrastructure.Migrations;
 using System.Net;
 using System.Threading.RateLimiting;
 
@@ -117,7 +119,7 @@ public static class DependencyInjection
     private static IServiceCollection AddMigration(this IServiceCollection services, IConfiguration configuration)
     {
         // Executa a migration Flyway ao subir a aplicação
-        RideSharingApp.Infrastructure.Database.DbUpMigrator.RunMigration(configuration);
+        DbUpMigrator.RunMigration(configuration);
 
         return services;
     }
