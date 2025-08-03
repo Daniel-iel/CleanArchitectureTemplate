@@ -7,6 +7,7 @@ using RideSharingApp.Application.UseCases.Rides.RequestRiders;
 
 namespace RideSharingApp.Api.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/v{version:apiVersion}/[controller]")]
 [ApiVersion("1.0")]
@@ -24,7 +25,6 @@ public class RidesController : ControllerBase
     }
 
     [HttpPost]
-    [Authorize]
     public async Task<IActionResult> RequestRideAsync([FromBody] RequestRideCommand command, CancellationToken cancellationToken)
     {
         try
@@ -43,7 +43,6 @@ public class RidesController : ControllerBase
     }
 
     [HttpGet("requests")]
-    [Authorize]
     public async Task<IActionResult> GetRequestedRidesAsync([FromQuery] GetRequestedRidesQuery query, CancellationToken cancellationToken)
     {
         var result = await _getHandler.HandleAsync(query, cancellationToken);

@@ -1,14 +1,15 @@
+using Asp.Versioning;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RideSharingApp.Application.UseCases.Subscription.Create;
-using Asp.Versioning;
 
 namespace RideSharingApp.Api.Controllers;
 
 [ApiController]
 [Route("api/v{version:apiVersion}/[controller]")]
 [ApiVersion("1.0")]
+[Authorize]
 public class SubscriptionsController : ControllerBase
 {
     private readonly CreateSubscriptionCommandHandler _handler;
@@ -21,7 +22,6 @@ public class SubscriptionsController : ControllerBase
     }
 
     [HttpPost]
-    [Authorize]
     public async Task<IActionResult> CreateAsync([FromBody] CreateSubscriptionCommand command, CancellationToken cancellationToken)
     {
         var validation = await _validator.ValidateAsync(command);

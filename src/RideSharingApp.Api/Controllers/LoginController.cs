@@ -1,7 +1,8 @@
+using Asp.Versioning;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RideSharingApp.Application.Abstractions.Messaging;
 using RideSharingApp.Application.UseCases.Login;
-using Asp.Versioning;
 
 namespace RideSharingApp.Api.Controllers;
 
@@ -17,6 +18,7 @@ public class LoginController : ControllerBase
     }
 
     [HttpPost("login")]
+    [AllowAnonymous]
     public async Task<IActionResult> LoginAsync([FromBody] LoginCommand command, CancellationToken cancellationToken)
     {
         var result = await _handler.HandleAsync(command, cancellationToken);
