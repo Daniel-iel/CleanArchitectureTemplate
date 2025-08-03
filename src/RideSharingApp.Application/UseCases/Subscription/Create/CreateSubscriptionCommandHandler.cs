@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using RideSharingApp.Application.Abstractions.Messaging;
 using RideSharingApp.Application.Common.Interfaces;
 using RideSharingApp.Domain.Subscriptions;
@@ -9,13 +10,18 @@ namespace RideSharingApp.Application.UseCases.Subscription.Create;
 
 public sealed class CreateSubscriptionCommandHandler : ICommandHandler<CreateSubscriptionCommand, SubscriptionResponse>
 {
+    private readonly ILogger<CreateSubscriptionCommandHandler> _logger;
     private readonly ISubscriptionRepository _subRepo;
-    private readonly IEventPublisher eventPublisher;
+    private readonly IEventPublisher _eventPublisher;
 
-    public CreateSubscriptionCommandHandler(ISubscriptionRepository subRepo, IEventPublisher eventPublisher)
+    public CreateSubscriptionCommandHandler(
+        ILogger<CreateSubscriptionCommandHandler> logger,
+        ISubscriptionRepository subRepo,
+        IEventPublisher eventPublisher)
     {
+        _logger = logger;
         _subRepo = subRepo;
-        this.eventPublisher = eventPublisher;
+        _eventPublisher = eventPublisher;
     }
 
     public async Task<Result<SubscriptionResponse>> HandleAsync(CreateSubscriptionCommand command, CancellationToken cancellationToken)
@@ -28,7 +34,7 @@ public sealed class CreateSubscriptionCommandHandler : ICommandHandler<CreateSub
             return Result.Failure<SubscriptionResponse>(Error.Problem("Subscription.CreationFailed", "Falha ao criar assinatura."));
         }
 
-        await eventPublisher.DispatchAsync(new SubscriptionCreatedEvent(created.Id, created.UserId, DateTime.UtcNow), cancellationToken);
+        await _eventPublisher.DispatchAsync(new SubscriptionCreatedEvent(created.Id, created.UserId, DateTime.UtcNow), cancellationToken);
 
         return Result.Success(new SubscriptionResponse(created.Id));
     }

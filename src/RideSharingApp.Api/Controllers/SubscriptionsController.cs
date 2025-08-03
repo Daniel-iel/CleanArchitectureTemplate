@@ -24,7 +24,7 @@ public class SubscriptionsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateAsync([FromBody] CreateSubscriptionCommand command, CancellationToken cancellationToken)
     {
-        var validation = await _validator.ValidateAsync(command);
+        var validation = await _validator.ValidateAsync(command, cancellationToken);
         if (!validation.IsValid)
         {
             return BadRequest(validation.Errors);

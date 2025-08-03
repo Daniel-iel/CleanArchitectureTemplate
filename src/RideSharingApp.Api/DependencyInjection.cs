@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.IdentityModel.Tokens;
 using RideSharingApp.Api.Middlewares;
+using Serilog;
 
 namespace RideSharingApp.Api;
 
@@ -27,6 +28,16 @@ public static class DependencyInjection
         return app;
     }
 
+    public static WebApplicationBuilder HostSerilog(this WebApplicationBuilder builder)
+    {
+        builder.Host.UseSerilog((context, loggerConfiguration) =>
+        {
+            loggerConfiguration.WriteTo.Console();
+        });
+
+        return builder;
+    }
+
     public static IServiceCollection AddApi(this IServiceCollection services, IConfiguration configuration)
     {
         services
@@ -36,7 +47,8 @@ public static class DependencyInjection
             .AddAuth(configuration)
             .AddVersioning()
             .AddSwaggerGen()
-            .AddCompression();
+            .AddCompression()
+            .UseSerilog(configuration);
 
         return services;
     }
@@ -112,8 +124,22 @@ public static class DependencyInjection
             })
             .Configure<GzipCompressionProviderOptions>(options =>
             {
-                options.Level = System.IO.Compression.CompressionLevel.Optimal;
+                options.Level = System.IO.Compression.CompressionLevel.Optimal
+;
             });
+
+        return services;
+    }
+
+    private static IServiceCollection UseSerilog(this IServiceCollection services, IConfiguration configuration)
+    {
+        Log.Logger = new LoggerConfiguration()
+            .ReadFrom.Configuration(configuration)
+            .Enrich.FromLogContext()
+            .WriteTo.Console()
+            .CreateLogger();
+
+        services.AddSingleton(Log.Logger);
 
         return services;
     }
