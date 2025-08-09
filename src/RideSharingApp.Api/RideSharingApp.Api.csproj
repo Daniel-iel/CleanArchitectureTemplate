@@ -1,10 +1,18 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <ServerGarbageCollection>true</ServerGarbageCollection>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Title>Clean Architecture Template</Title>
+    <RepositoryUrl>https://github.com/Daniel-iel/CleanArchitectureTemplate</RepositoryUrl>
+    <PackageTags>C#; WebApi; Microservices; CleanArchitecture</PackageTags>
+    <PackAsTool>True</PackAsTool>
+    <NeutralLanguage>en</NeutralLanguage>
+    <PackageOutputPath>..\</PackageOutputPath>
+    <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>

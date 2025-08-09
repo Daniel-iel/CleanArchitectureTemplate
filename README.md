@@ -11,30 +11,26 @@ This project is a Clean Architecture .NET solution for a ride-sharing business d
 - Architecture tests with TngTech.ArchUnitNET
 - Performance best practices
 
-## Projects
-- **RideSharingApp.Api**: ASP.NET Core Web API
-- **RideSharingApp.Application**: Application logic, use cases, validators
-- **RideSharingApp.Domain**: Domain entities, events, aggregates
-- **RideSharingApp.Infrastructure**: Data access, Dapper, ServiceBus, SQL Server
-- **RideSharingApp.Tests**: Unit and architecture tests
+## Instalação
 
-## Getting Started
-1. Configure your SQL Server connection string in `appsettings.json`.
-2. Run database migrations (if any).
-3. Build and run the solution:
-   ```powershell
-   dotnet build
-   dotnet run --project RideSharingApp.Api
-   ```
-4. The API will be available at `https://localhost:5001` (default).
+1. Abra um terminal da pasta `src`.
+2. Rode o comando dotnet new install .
 
-## Testing
-Run all tests:
-```powershell
-dotnet test
+**outout**
+
+```bash
+Nome do modelo                              Nome Curto         Idioma  Tags
+------------------------------------------  -----------------  ------  --------------------------------------------
+RideSharingApp Clean Architecture Template  cleanarchtemplate  [C#]    Web/API/Clean Architecture/Flyway/PostgreSQL
+ ```
+
+## Usando o Templete
+
+1. Abra um terminal no diretório que será criado a aplicação
+2. Execute o comando `dotnet new cleanarchtemplate -n <NOME DO PROJETO> --Framework net8.0`.
+
+**outout**
+
+```bash
+O modelo "RideSharingApp Clean Architecture Template" foi criado com êxito.
 ```
-
-## Notes
-- This project uses Scrutor for DI scanning instead of MediatR.
-- Domain events are published to Azure ServiceBus as an example.
-- Follows best practices for performance and maintainability.

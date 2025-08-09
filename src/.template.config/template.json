@@ -1,0 +1,48 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "Daniel Oliveira",
+  "classifications": [
+    "Web",
+    "API",
+    "Clean Architecture",
+    "Flyway",
+    "PostgreSQL"
+  ],
+  "identity": "RideSharingApp.CleanArchitectureTemplate",
+  "name": "RideSharingApp Clean Architecture Template",
+  "shortName": "cleanarchtemplate",
+  "tags": {
+    "language": "C#",
+    "type": "project"
+  },
+  "sourceName": "RideSharingApp",
+  "preferNameDirectory": true,
+  "description": "Template de Clean Architecture para .NET com API, Flyway e PostgreSQL.",
+  "symbols": {
+    "Framework": {
+      "type": "parameter",
+      "datatype": "choice",
+      "choices": [
+        {
+          "choice": "net9.0",
+          "description": ".NET 9.0"
+        },
+        {
+          "choice": "net8.0",
+          "description": ".NET 8.0"
+        },
+        {
+          "choice": "net7.0",
+          "description": ".NET 7.0"
+        }
+      ],
+      "defaultValue": "net9.0",
+      "description": "Versão do .NET alvo para o projeto"
+    }
+  },
+  "primaryOutputs": [
+    {
+      "path": "src/RideSharingApp.sln"
+    }
+  ]
+}
