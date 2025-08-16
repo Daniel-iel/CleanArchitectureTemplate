@@ -30,7 +30,7 @@ public class UserRepository : IUserRepository
         var user = await connection.DbConnection.QueryFirstOrDefaultAsync<User>("SELECT * FROM Users WHERE Id = @Id", new { Id = id });
         if (user != null)
         {
-            var subscriptions = await connection.DbConnection.QueryAsync<Domain.Subscriptions.Subscription>("SELECT * FROM Subscriptions WHERE UserId = @UserId", new { UserId = user.Id });
+            var subscriptions = await connection.DbConnection.QueryAsync<Domain.Subscriptions.Subscription>("SELECT * FROM Subscriptions WHERE id = @UserId", new { UserId = user.Id });
             user.Subscriptions = subscriptions.ToList();
         }
         return user;

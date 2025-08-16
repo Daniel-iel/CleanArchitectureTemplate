@@ -21,13 +21,13 @@ public class CurrencyQuotationService : ICurrencyQuotationService
         _logger = logger;
     }
 
-    public async Task<decimal?> GetDollarQuotationAsync()
+    public async Task<decimal?> GetDollarQuotationAsync(CancellationToken cancellationToken)
     {
         try
         {
-            var response = await _client.GetAsync(_options.Url);
+            var response = await _client.GetAsync("json/last/USD-BRL", cancellationToken);
             response.EnsureSuccessStatusCode();
-            var json = await response.Content.ReadAsStringAsync();
+            var json = await response.Content.ReadAsStringAsync(cancellationToken);
             var result = JsonDocument.Parse(json);
             // Ajuste conforme o formato da resposta da API externa
             var value = result.RootElement.GetProperty("USDBRL").GetProperty("bid").GetDecimal();

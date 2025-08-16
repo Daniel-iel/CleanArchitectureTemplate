@@ -1,41 +1,37 @@
 @RideSharingAppApi_HostAddress = http://localhost:5062
+@apiVersion = 1
 
-# Login via Keycloak (token endpoint)
-POST http://localhost:8080/realms/templateAuth/protocol/openid-connect/token
-Content-Type: application/x-www-form-urlencoded
-
-username=testuser&password=testpassword&grant_type=password&client_id=ridesharing-api&client_secret=ridesharing-secret
-
-###
-
-# Request a Ride
-POST {{RideSharingAppApi_HostAddress}}/api/v1/rides/request
+### LOGIN
+POST {{RideSharingAppApi_HostAddress}}/api/v{{apiVersion}}/login/login
 Content-Type: application/json
-Authorization: Bearer 
 
 {
-  "origin": "Avenida Paulista, 1000",
-  "destination": "Rua Fictícia, 123",
-  "userId": "00000000-0000-0000-0000-000000000000"
+  "email": "user@email.com",
+  "password": "senha123"
 }
 
-###
+### REQUEST RIDE
+POST {{RideSharingAppApi_HostAddress}}/api/v{{apiVersion}}/rides
+Content-Type: application/json
+timeout: 1000000000000000000000000000000000000000000000000
+Authorization: Bearer
 
-# Get Requested Rides
-GET {{RideSharingAppApi_HostAddress}}/api/v1/rides/requests
-Authorization: Bearer 
+{
+  "passengerId": "ce7a2760-364e-4d77-b734-5d0070030ec5",
+  "pickupLocation": "Avenida Paulista, 1000",
+  "dropoffLocation": "Rua Fictícia, 123"
+}
+
+### GET REQUESTED RIDES
+GET {{RideSharingAppApi_HostAddress}}/api/v{{apiVersion}}/rides/requests?passengerId=00000000-0000-0000-0000-000000000000&pickupLocation=Avenida%20Paulista,%201000&dropoffLocation=Rua%20Fict%C3%ADcia,%20123
+Authorization: Bearer
 Accept: application/json
 
-###
-
-# Create Subscription
-POST {{RideSharingAppApi_HostAddress}}/api/v1/subscriptions
+### CREATE SUBSCRIPTION
+POST {{RideSharingAppApi_HostAddress}}/api/v{{apiVersion}}/subscriptions
 Content-Type: application/json
-Authorization: Bearer 
+Authorization: Bearer
 
 {
-  "userId": "00000000-0000-0000-0000-000000000000",
-  "plan": "premium"
+  "userId": "00000000-0000-0000-0000-000000000000"
 }
-
-###

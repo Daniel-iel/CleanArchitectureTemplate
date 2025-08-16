@@ -13,9 +13,18 @@ public sealed class SubscriptionRepository : ISubscriptionRepository
         this.connection = connection;
     }
 
-    public async Task<List<Subscription>> GetByUserIdAsync(Guid userId)
+    public async Task<List<Subscription>> GetByUserIdAsync(Guid userId, CancellationToken cancellationToken)
     {
-        var subscriptions = await connection.DbConnection.QueryAsync<Subscription>("SELECT * FROM Subscriptions WHERE UserId = @UserId", new { UserId = userId });
+        const string query = "SELECT * FROM Subscriptions WHERE user_id = @UserId";
+        var parameters = new { UserId = userId };
+
+        var command = new CommandDefinition(
+            commandText: query,
+            parameters: parameters,
+            cancellationToken: cancellationToken
+        );
+
+        var subscriptions = await connection.DbConnection.QueryAsync<Subscription>(command);
 
         return subscriptions.ToList();
     }

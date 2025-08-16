@@ -1,5 +1,5 @@
-﻿using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Options;
+using Npgsql;
 using RideSharingApp.Infrastructure.Database.Settings;
 using System.Data;
 
@@ -15,28 +15,28 @@ public interface IConnection
 public sealed class Connection : IConnection, IDisposable
 {
     private readonly ConectionString _conectionString;
+    private NpgsqlConnection sqlConnection;
 
     public Connection(IOptions<ConectionString> options)
     {
         _conectionString = options.Value;
     }
 
-    public IDbConnection DbConnection => CreateConnection();
+    public IDbConnection DbConnection
+    {
+        get
+        {
+            sqlConnection = new NpgsqlConnection(_conectionString.RideConnection);
+            sqlConnection.Open();
+
+            return sqlConnection;
+        }
+    }
 
     public IDbTransaction Transaction { get; set; }
 
-    private IDbConnection CreateConnection()
-    {
-        if (DbConnection == null || DbConnection.State != ConnectionState.Open)
-        {
-            return new SqlConnection(_conectionString.RideConnection);
-        }
-
-        return DbConnection;
-    }
-
     public void Dispose()
     {
-        DbConnection?.Dispose();
+        sqlConnection?.Dispose();
     }
 }

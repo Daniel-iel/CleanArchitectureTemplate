@@ -42,6 +42,7 @@ public static class DependencyInjection
         services.AddHttpClient("CurrencyApi", client =>
         {
             client.BaseAddress = new Uri(currencyApiSetting.Url);
+            client.Timeout = TimeSpan.FromSeconds(30);
         })
         .AddResilienceHandler("custom", builder =>
         {

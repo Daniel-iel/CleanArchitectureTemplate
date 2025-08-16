@@ -18,7 +18,8 @@ public class RideRepository : IRideRepository
     {
         ride.Id = Guid.NewGuid();
         await connection.DbConnection.ExecuteAsync(
-            "INSERT INTO Rides (Id, PassengerId, PickupLocation, DropoffLocation, RequestedAt, Status) VALUES (@Id, @PassengerId, @PickupLocation, @DropoffLocation, @RequestedAt, @Status)",
+            "INSERT INTO Rides (Id, Passenger_Id, Pickup_Location, Dropoff_Location, Requested_At, Status) " +
+            "VALUES (@Id, @PassengerId, @PickupLocation, @DropoffLocation, @RequestedAt, @Status)",
             ride,
             connection.Transaction
         );

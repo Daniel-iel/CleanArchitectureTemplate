@@ -25,7 +25,9 @@ public class RidesController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> RequestRideAsync([FromBody] RequestRideCommand command, CancellationToken cancellationToken)
+    public async Task<IActionResult> RequestRideAsync(
+        [FromBody] RequestRideCommand command,
+        CancellationToken cancellationToken)
     {
         try
         {

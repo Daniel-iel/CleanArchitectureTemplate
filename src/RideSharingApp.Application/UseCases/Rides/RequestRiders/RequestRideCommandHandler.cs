@@ -1,3 +1,4 @@
+using RideSharingApp.Application.Abstractions.Messaging;
 using RideSharingApp.Application.Common.Interfaces;
 using RideSharingApp.Application.Common.Interfaces.ExternalApis;
 using RideSharingApp.Domain.Rides;
@@ -6,7 +7,7 @@ using RideSharingApp.SharedKernel.Results;
 
 namespace RideSharingApp.Application.UseCases.Rides.RequestRiders;
 
-public sealed class RequestRideCommandHandler
+public sealed class RequestRideCommandHandler : ICommandHandler<RequestRideCommand, RequestRideResponse>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IRideRepository _rideRepo;
@@ -31,7 +32,7 @@ public sealed class RequestRideCommandHandler
         _currencyService = currencyService;
     }
 
-    public async Task<Result<RequestRideResponse>> HandleAsync(RequestRideCommand command)
+    public async Task<Result<RequestRideResponse>> HandleAsync(RequestRideCommand command, CancellationToken cancellationToken)
     {
         var user = await _userRepo.GetByIdAsync(command.PassengerId);
         if (user == null)
@@ -39,7 +40,7 @@ public sealed class RequestRideCommandHandler
             return Result.Failure<RequestRideResponse>(Error.NotFound("User.NotFound", "Usuário não encontrado."));
         }
 
-        var subscriptions = await _subRepo.GetByUserIdAsync(user.Id);
+        var subscriptions = await _subRepo.GetByUserIdAsync(user.Id, cancellationToken);
         var activeSub = subscriptions.FirstOrDefault(s => s.IsActive);
         if (activeSub == null)
         {
@@ -49,11 +50,12 @@ public sealed class RequestRideCommandHandler
         try
         {
             // Chama API externa para cotação do dólar
-            var dollarQuotation = await _currencyService.GetDollarQuotationAsync();
-            if (dollarQuotation == null)
-            {
-                return Result.Failure<RequestRideResponse>(Error.Problem("CurrencyApi.Failed", "Não foi possível obter a cotação do dólar."));
-            }
+            //var dollarQuotation = await _currencyService.GetDollarQuotationAsync(cancellationToken);
+            //if (dollarQuotation == null)
+            //{
+            //    return Result.Failure<RequestRideResponse>(Error.Problem("CurrencyApi.Failed", "Não foi possível obter a cotação do dólar."));
+            //}
+            _unitOfWork.BeginTransaction();
 
             var ride = new RideRequest
             {
@@ -62,15 +64,20 @@ public sealed class RequestRideCommandHandler
                 DropoffLocation = command.DropoffLocation,
                 RequestedAt = DateTime.UtcNow,
                 Status = RideStatus.Requested,
-                EstimatedCost = 10 * dollarQuotation.Value, // ajuste conforme regra de negócio
+                EstimatedCost = 10 * 5.39M, // ajuste conforme regra de negócio
                 DriverId = null // ou atribua conforme lógica de matching
             };
 
             var created = await _rideRepo.AddAsync(ride);
 
-            var rideRequestedEvent = new RideRequestedEvent(created.Id, created.PassengerId, created.PickupLocation, created.DropoffLocation, created.RequestedAt);
+            var rideRequestedEvent = new RideRequestedEvent(
+                created.Id,
+                created.PassengerId,
+                created.PickupLocation,
+                created.DropoffLocation,
+                created.RequestedAt);
 
-            await _eventPublisher.DispatchAsync(rideRequestedEvent);
+            await _eventPublisher.DispatchAsync(rideRequestedEvent, cancellationToken);
 
             _unitOfWork.Commit();
 
