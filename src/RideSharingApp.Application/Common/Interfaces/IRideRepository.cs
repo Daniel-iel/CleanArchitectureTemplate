@@ -4,7 +4,12 @@ namespace RideSharingApp.Application.Common.Interfaces;
 
 public interface IRideRepository
 {
-    Task<RideRequest> AddAsync(RideRequest ride);
-    Task<IEnumerable<RideRequest>> GetRequestedRidesAsync();
-    Task UpdateStatusAsync(Guid rideId, RideStatus status, Guid? driverId = null);
+    Task<RideRequest> AddAsync(RideRequest ride, CancellationToken cancellationToken);
+    Task<IEnumerable<RideRequest>> GetRequestedRidesAsync(CancellationToken cancellationToken);
+    Task UpdateStatusAsync(
+        Guid rideId,
+        RideStatus status,
+        Guid? driverId,
+        CancellationToken cancellationToken
+    );
 }

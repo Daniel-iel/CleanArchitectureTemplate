@@ -1,44 +1,104 @@
 ﻿using Dapper;
 using RideSharingApp.Application.Common.Interfaces;
 using RideSharingApp.Domain.Login;
+using RideSharingApp.Domain.Subscriptions;
+using System.Data;
 
 namespace RideSharingApp.Infrastructure.Database.Login;
 
 public class UserRepository : IUserRepository
 {
-    private readonly IConnection connection;
+    private readonly IConnection _connection;
 
     public UserRepository(IConnection connection)
     {
-        this.connection = connection;
+        _connection = connection;
     }
 
-    public async Task<User?> GetByEmailAsync(string email)
+    public async Task<User?> GetByEmailAsync(string email, CancellationToken cancellationToken)
     {
-        var user = await connection.DbConnection.QueryFirstOrDefaultAsync<User>("SELECT * FROM Users WHERE Email = @Email", new { Email = email });
-        if (user != null)
-        {
-            var subscriptions = await connection.DbConnection.QueryAsync<Domain.Subscriptions.Subscription>("SELECT * FROM Subscriptions WHERE UserId = @UserId", new { UserId = user.Id });
-            user.Subscriptions = subscriptions.ToList();
-        }
+        const string query =
+           """
+               SELECT usu.*, sub.* FROM
+               Users usu left join Subscriptions sub
+                on usu.id = sub.user_id
+               WHERE usu.Email = @Email;
+           """;
 
-        return user;
+        var command = new CommandDefinition(
+           query,
+           parameters: new { Email = email },
+           commandType: CommandType.Text,
+           cancellationToken: cancellationToken
+        );
+
+        var user = await _connection.DbConnection.QueryAsync<User, Subscription, User>(
+            command,
+            map: (user, subscription) =>
+            {
+                if (subscription != null)
+                {
+                    user.Subscriptions ??= new List<Subscription>();
+                    user.Subscriptions.Add(subscription);
+                }
+
+                return user;
+            },
+            splitOn: "Id");
+
+        return user.FirstOrDefault();
     }
 
-    public async Task<User?> GetByIdAsync(Guid id)
+    public async Task<User?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var user = await connection.DbConnection.QueryFirstOrDefaultAsync<User>("SELECT * FROM Users WHERE Id = @Id", new { Id = id });
-        if (user != null)
-        {
-            var subscriptions = await connection.DbConnection.QueryAsync<Domain.Subscriptions.Subscription>("SELECT * FROM Subscriptions WHERE id = @UserId", new { UserId = user.Id });
-            user.Subscriptions = subscriptions.ToList();
-        }
-        return user;
+        const string query =
+          """
+               SELECT usu.*, sub.* FROM
+               Users usu left join Subscriptions sub
+                on usu.id = sub.user_id
+               WHERE usu.Id = @Id;
+           """;
+
+        var command = new CommandDefinition(
+            query,
+            parameters: new { Id = id },
+            commandType: CommandType.Text,
+            cancellationToken: cancellationToken
+        );
+
+        var user = await _connection.DbConnection.QueryAsync<User, Subscription, User>(
+           command,
+           map: (user, subscription) =>
+           {
+               if (subscription != null)
+               {
+                   user.Subscriptions ??= new List<Subscription>();
+                   user.Subscriptions.Add(subscription);
+               }
+
+               return user;
+           },
+           splitOn: "Id");
+
+        return user.FirstOrDefault();
     }
 
-    public Task AddAsync(User user)
+    public Task AddAsync(User user, CancellationToken cancellationToken)
     {
         user.Id = Guid.NewGuid();
-        return connection.DbConnection.ExecuteAsync("INSERT INTO Users (Id, Email, PasswordHash) VALUES (@Id, @Email, @PasswordHash)", user);
+
+        const string query =
+            """
+                INSERT INTO Users (Id, Email, PasswordHash) VALUES (@Id, @Email, @PasswordHash);
+            """;
+
+        var command = new CommandDefinition(
+             query,
+             parameters: user,
+             commandType: CommandType.Text,
+             cancellationToken: cancellationToken
+        );
+
+        return _connection.DbConnection.ExecuteAsync(command);
     }
 }

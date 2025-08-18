@@ -26,8 +26,13 @@ public sealed class CreateSubscriptionCommandHandler : ICommandHandler<CreateSub
 
     public async Task<Result<SubscriptionResponse>> HandleAsync(CreateSubscriptionCommand command, CancellationToken cancellationToken)
     {
-        var subscription = new SubscriptionEntity { UserId = command.UserId, StartDate = DateTime.UtcNow };
-        var created = await _subRepo.AddAsync(subscription);
+        var subscription = new SubscriptionEntity
+        {
+            UserId = command.UserId,
+            StartDate = DateTime.UtcNow
+        };
+
+        var created = await _subRepo.AddAsync(subscription, cancellationToken);
 
         if (created == null)
         {

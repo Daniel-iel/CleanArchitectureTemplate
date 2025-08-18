@@ -19,7 +19,7 @@ public sealed class LoginCommandHandler : ICommandHandler<LoginCommand, LoginRes
 
     public async Task<Result<LoginResponse>> HandleAsync(LoginCommand command, CancellationToken cancellationToken)
     {
-        var user = await _userRepo.GetByEmailAsync(command.Email);
+        var user = await _userRepo.GetByEmailAsync(command.Email, cancellationToken);
         if (user == null || user.PasswordHash != command.Password) // Hash check simplificado
         {
             return Result.Failure<LoginResponse>(Error.NotFound("Login.InvalidCredentials", "Credenciais inválidas."));

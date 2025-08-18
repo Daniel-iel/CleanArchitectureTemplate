@@ -1,46 +1,86 @@
 using Dapper;
+using RideSharingApp.Application.Common.Interfaces;
 using RideSharingApp.Domain.Rides;
 
 namespace RideSharingApp.Infrastructure.Database.Rides;
 
-using RideSharingApp.Application.Common.Interfaces;
-
 public class RideRepository : IRideRepository
 {
-    private readonly IConnection connection;
+    private readonly IConnection _connection;
 
     public RideRepository(IConnection connection)
     {
-        this.connection = connection;
+        _connection = connection;
     }
 
-    public async Task<RideRequest> AddAsync(RideRequest ride)
+    public async Task<RideRequest> AddAsync(RideRequest ride, CancellationToken cancellationToken)
     {
         ride.Id = Guid.NewGuid();
-        await connection.DbConnection.ExecuteAsync(
-            "INSERT INTO Rides (Id, Passenger_Id, Pickup_Location, Dropoff_Location, Requested_At, Status) " +
-            "VALUES (@Id, @PassengerId, @PickupLocation, @DropoffLocation, @RequestedAt, @Status)",
-            ride,
-            connection.Transaction
+
+        const string query =
+            """
+                INSERT INTO Rides (Id, Passenger_Id, Pickup_Location, Dropoff_Location, Requested_At, Status)
+                VALUES (@Id, @PassengerId, @PickupLocation, @DropoffLocation, @RequestedAt, @Status);
+            """;
+
+        var command = new CommandDefinition(
+          commandText: query,
+          parameters: ride,
+          _connection.Transaction,
+          cancellationToken: cancellationToken
         );
+
+        await _connection.DbConnection.ExecuteAsync(command);
+
         return ride;
     }
 
-    public Task<IEnumerable<RideRequest>> GetRequestedRidesAsync()
+    public Task<IEnumerable<RideRequest>> GetRequestedRidesAsync(CancellationToken cancellationToken)
     {
-        return connection.DbConnection.QueryAsync<RideRequest>(
-            "SELECT * FROM Rides WHERE Status = @Status",
-            new { Status = RideStatus.Requested },
-             connection.Transaction
+        const string query =
+           """
+               SELECT * FROM Rides WHERE Status = @Status;
+           """;
+
+        var parameters = new
+        {
+            Status = RideStatus.Requested
+        };
+
+        var command = new CommandDefinition(
+          commandText: query,
+          parameters: parameters,
+          cancellationToken: cancellationToken
         );
+
+        return _connection.DbConnection.QueryAsync<RideRequest>(command);
     }
 
-    public Task UpdateStatusAsync(Guid rideId, RideStatus status, Guid? driverId = null)
+    public Task UpdateStatusAsync(
+        Guid rideId,
+        RideStatus status,
+        Guid? driverId,
+        CancellationToken cancellationToken)
     {
-        return connection.DbConnection.ExecuteAsync(
-            "UPDATE Rides SET Status = @Status, DriverId = @DriverId WHERE Id = @Id",
-            new { Status = status, DriverId = driverId, Id = rideId },
-             connection.Transaction
+        const string query =
+          """
+            UPDATE Rides SET Status = @Status, DriverId = @DriverId WHERE Id = @Id;
+          """;
+
+        var parameters = new
+        {
+            Status = status,
+            DriverId = driverId,
+            Id = rideId
+        };
+
+        var command = new CommandDefinition(
+          commandText: query,
+          parameters: parameters,
+          _connection.Transaction,
+          cancellationToken: cancellationToken
         );
+
+        return _connection.DbConnection.ExecuteAsync(command);
     }
 }

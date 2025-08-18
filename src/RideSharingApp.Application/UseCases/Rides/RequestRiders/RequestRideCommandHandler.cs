@@ -34,7 +34,7 @@ public sealed class RequestRideCommandHandler : ICommandHandler<RequestRideComma
 
     public async Task<Result<RequestRideResponse>> HandleAsync(RequestRideCommand command, CancellationToken cancellationToken)
     {
-        var user = await _userRepo.GetByIdAsync(command.PassengerId);
+        var user = await _userRepo.GetByIdAsync(command.PassengerId, cancellationToken);
         if (user == null)
         {
             return Result.Failure<RequestRideResponse>(Error.NotFound("User.NotFound", "Usuário não encontrado."));
@@ -68,14 +68,15 @@ public sealed class RequestRideCommandHandler : ICommandHandler<RequestRideComma
                 DriverId = null // ou atribua conforme lógica de matching
             };
 
-            var created = await _rideRepo.AddAsync(ride);
+            var created = await _rideRepo.AddAsync(ride, cancellationToken);
 
             var rideRequestedEvent = new RideRequestedEvent(
                 created.Id,
                 created.PassengerId,
                 created.PickupLocation,
                 created.DropoffLocation,
-                created.RequestedAt);
+                created.RequestedAt
+            );
 
             await _eventPublisher.DispatchAsync(rideRequestedEvent, cancellationToken);
 
