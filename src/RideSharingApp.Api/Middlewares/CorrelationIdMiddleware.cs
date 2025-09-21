@@ -1,27 +1,23 @@
-using Microsoft.AspNetCore.Http;
-using System;
-using System.Threading.Tasks;
+namespace RideSharingApp.Api.Middlewares;
 
-namespace RideSharingApp.Api.Middlewares
+public class CorrelationIdMiddleware
 {
-    public class CorrelationIdMiddleware
+    private const string CorrelationIdHeader = "X-Correlation-Id";
+    private readonly RequestDelegate _next;
+
+    public CorrelationIdMiddleware(RequestDelegate next)
     {
-        private const string CorrelationIdHeader = "X-Correlation-Id";
-        private readonly RequestDelegate _next;
+        _next = next;
+    }
 
-        public CorrelationIdMiddleware(RequestDelegate next)
+    public Task InvokeAsync(HttpContext context)
+    {
+        if (!context.Request.Headers.ContainsKey(CorrelationIdHeader))
         {
-            _next = next;
+            context.Request.Headers[CorrelationIdHeader] = Guid.NewGuid().ToString();
         }
 
-        public async Task InvokeAsync(HttpContext context)
-        {
-            if (!context.Request.Headers.ContainsKey(CorrelationIdHeader))
-            {
-                context.Request.Headers[CorrelationIdHeader] = Guid.NewGuid().ToString();
-            }
-            context.Response.Headers[CorrelationIdHeader] = context.Request.Headers[CorrelationIdHeader];
-            await _next(context);
-        }
+        context.Response.Headers[CorrelationIdHeader] = context.Request.Headers[CorrelationIdHeader];
+        return _next(context);
     }
 }
