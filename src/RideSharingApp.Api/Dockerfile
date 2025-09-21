@@ -19,6 +19,12 @@ COPY --from=build /app/out .
 EXPOSE 80
 EXPOSE 443
 
+# Configura variáveis padrão do OpenTelemetry
+ENV OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
+ENV OTEL_METRICS_EXPORTER=otlp
+ENV OTEL_TRACES_EXPORTER=none
+ENV OTEL_LOGS_EXPORTER=none
+
 # Set environment variables if needed
 # ENV ASPNETCORE_URLS="http://+:80"
 

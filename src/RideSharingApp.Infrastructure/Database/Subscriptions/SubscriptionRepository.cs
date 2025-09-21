@@ -17,7 +17,7 @@ public sealed class SubscriptionRepository : ISubscriptionRepository
     {
         const string query =
             """
-                SELECT * FROM Subscriptions WHERE user_id = @UserId";
+                SELECT * FROM Subscriptions WHERE user_id = @UserId;
             """;
 
         var parameters = new

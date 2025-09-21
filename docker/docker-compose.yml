@@ -1,5 +1,57 @@
 version: '3.8'
+
 services:
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:latest
+    command: ["--config=/etc/otel-collector-config.yml"]
+    volumes:
+      - ./otel-collector-config.yml:/etc/otel-collector-config.yml
+    ports:
+      - "4318:4318" # OTLP HTTP
+      - "9464:9464" # Prometheus scrape
+    networks:
+      - monitoring
+
+    depends_on:
+      - tempo
+
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - monitoring
+
+  grafana:
+    image: grafana/grafana:latest
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    ports:
+      - "3001:3000"
+    networks:
+      - monitoring
+
+  loki:
+    image: grafana/loki:2.9.2
+    command: -config.file=/etc/loki/local-config.yaml
+    ports:
+      - "3100:3100"
+    networks:
+      - monitoring
+
+  tempo:
+    image: grafana/tempo:2.4.1
+    command: ["-config.file=/etc/tempo.yaml"]
+    volumes:
+      - ./tempo.yaml:/etc/tempo.yaml
+    ports:
+      - "3200:3200" # API Tempo
+    networks:
+      - monitoring
+  
   postgres:
     image: postgres:16-alpine
     container_name: ridesharing_postgres
@@ -17,8 +69,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-volumes:
-  pgdata:
+    networks:
+      - monitoring
 
   keycloak:
     image: quay.io/keycloak/keycloak:24.0.3
@@ -27,7 +79,7 @@ volumes:
     environment:
       KC_DB: postgres
       KC_DB_URL_HOST: postgres
-      KC_DB_URL_DATABASE: ridesharingdb
+      KC_DB_URL_DATABASE: ridesharingkeycloakdb
       KC_DB_USERNAME: postgres
       KC_DB_PASSWORD: postgres
       KC_HEALTH_ENABLED: true
@@ -41,3 +93,12 @@ volumes:
     command: start-dev --import-realm
     volumes:
       - ./keycloak/realm-templateAuth.json:/opt/keycloak/data/import/realm-templateAuth.json
+    networks:
+      - monitoring
+
+volumes:
+  pgdata:
+
+networks:
+  monitoring:
+    driver: bridge

@@ -1,5 +1,4 @@
 using Asp.Versioning;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RideSharingApp.Application.Abstractions.Messaging;
 using RideSharingApp.Application.UseCases.Rides.GetRiders;
@@ -7,7 +6,7 @@ using RideSharingApp.Application.UseCases.Rides.RequestRiders;
 
 namespace RideSharingApp.Api.Controllers;
 
-[Authorize]
+//[Authorize]
 [ApiController]
 [Route("api/v{version:apiVersion}/[controller]")]
 [ApiVersion("1.0")]

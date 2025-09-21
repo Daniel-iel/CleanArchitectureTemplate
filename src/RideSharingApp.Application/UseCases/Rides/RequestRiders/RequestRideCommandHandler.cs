@@ -1,6 +1,7 @@
 using RideSharingApp.Application.Abstractions.Messaging;
 using RideSharingApp.Application.Common.Interfaces;
 using RideSharingApp.Application.Common.Interfaces.ExternalApis;
+using RideSharingApp.Application.UseCases.Rides.Metrics;
 using RideSharingApp.Domain.Rides;
 using RideSharingApp.SharedKernel.DispacherEvent;
 using RideSharingApp.SharedKernel.Results;
@@ -9,6 +10,7 @@ namespace RideSharingApp.Application.UseCases.Rides.RequestRiders;
 
 public sealed class RequestRideCommandHandler : ICommandHandler<RequestRideCommand, RequestRideResponse>
 {
+    private readonly INewRides _newRides;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IRideRepository _rideRepo;
     private readonly IUserRepository _userRepo;
@@ -17,6 +19,7 @@ public sealed class RequestRideCommandHandler : ICommandHandler<RequestRideComma
     private readonly ICurrencyQuotationService _currencyService;
 
     public RequestRideCommandHandler(
+        INewRides newRides,
         IUnitOfWork unitOfWork,
         IRideRepository rideRepo,
         IUserRepository userRepo,
@@ -24,6 +27,7 @@ public sealed class RequestRideCommandHandler : ICommandHandler<RequestRideComma
         IEventPublisher eventPublisher,
         ICurrencyQuotationService currencyService)
     {
+        _newRides = newRides;
         _unitOfWork = unitOfWork;
         _rideRepo = rideRepo;
         _userRepo = userRepo;
@@ -81,6 +85,8 @@ public sealed class RequestRideCommandHandler : ICommandHandler<RequestRideComma
             await _eventPublisher.DispatchAsync(rideRequestedEvent, cancellationToken);
 
             _unitOfWork.Commit();
+
+            _newRides.Increment();
 
             return Result.Success(new RequestRideResponse(created.Id, created.Status.ToString()));
         }

@@ -2,8 +2,13 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.IdentityModel.Tokens;
+using OpenTelemetry.Logs;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using RideSharingApp.Api.Middlewares;
 using Serilog;
+
 
 namespace RideSharingApp.Api;
 
@@ -26,7 +31,8 @@ public static class DependencyInjection
         app
             .UseMiddleware<SecurityHeadersMiddleware>()
             .UseMiddleware<CorrelationIdMiddleware>()
-            .UseMiddleware<GlobalExceptionMiddleware>();
+            .UseMiddleware<GlobalExceptionMiddleware>()
+            .UseMiddleware<IdempotencyMiddleware>();
 
         return app;
     }
@@ -36,6 +42,21 @@ public static class DependencyInjection
         builder.Host.UseSerilog((context, loggerConfiguration) =>
         {
             loggerConfiguration.WriteTo.Console();
+        });
+
+        var resourceBuilder = ResourceBuilder.CreateDefault()
+            .AddService("RideSharingAppApi", serviceVersion: "1.0.0");
+
+        // ---------- LOGGING ----------
+        builder.Logging.ClearProviders();
+        builder.Logging.AddOpenTelemetry(logging =>
+        {
+            logging
+                .SetResourceBuilder(resourceBuilder)
+                .AddOtlpExporter(o =>
+                {
+                    o.Endpoint = new Uri("http://otel-collector:4317");
+                });
         });
 
         return builder;
@@ -51,7 +72,8 @@ public static class DependencyInjection
             .AddVersioning()
             .AddSwaggerGen()
             .AddCompression()
-            .UseSerilog(configuration);
+            .UseSerilog(configuration)
+            .AddOpenTel();
 
         return services;
     }
@@ -146,4 +168,77 @@ public static class DependencyInjection
 
         return services;
     }
+
+    private static IServiceCollection AddOpenTel(this IServiceCollection services)
+    {
+        var resourceBuilder = ResourceBuilder.CreateDefault()
+            .AddService("RideSharingAppApi", serviceVersion: "1.0.0");
+
+        services.AddOpenTelemetry()
+            .WithMetrics(metrics =>
+            {
+                metrics
+                    .SetResourceBuilder(ResourceBuilder.CreateDefault()
+                        .AddService(nameof(RideSharingApp)))
+                    .AddAspNetCoreInstrumentation()
+                    .AddRuntimeInstrumentation()
+                    .AddProcessInstrumentation()
+                    .AddOtlpExporter(o =>
+                    {
+                        o.Endpoint = new Uri(Environment.GetEnvironmentVariable("OTEL_EXPORTER_OTLP_ENDPOINT") ?? "http://otel-collector:4318");
+                    });
+            });
+
+        // ---------- MÉTRICAS ----------
+        services.AddOpenTelemetry()
+            .WithMetrics(metrics =>
+            {
+                metrics
+                    .SetResourceBuilder(resourceBuilder)
+                    .AddAspNetCoreInstrumentation()
+                    .AddRuntimeInstrumentation()
+                    .AddProcessInstrumentation()
+                    .AddMeter("RideSharingAppApiMetrics")
+                    .AddOtlpExporter(o =>
+                    {
+                        o.Endpoint = new Uri("http://otel-collector:4317");
+                    });
+            });
+
+        // ---------- TRACING ----------
+        services.AddOpenTelemetry()
+            .WithTracing(tracing =>
+            {
+                tracing
+                    .SetResourceBuilder(resourceBuilder)
+                    .AddAspNetCoreInstrumentation()
+                    .AddHttpClientInstrumentation()
+                    .AddOtlpExporter(o =>
+                    {
+                        o.Endpoint = new Uri("http://otel-collector:4317");
+                    });
+            });
+
+        return services;
+    }
 }
+
+//internal class NewRides : INewRides
+//{
+//    private readonly Counter<long> _ordersCounter;
+
+//    public NewRides(IMeterProvider meterProvider)
+//    {
+//        // Cria um meter via abstração do OpenTelemetry
+//        var meter = meterProvider.GetMeter("MyAppMetrics");
+//        _ordersCounter = meter.CreateCounter<long>(
+//            "orders_total",
+//            description: "Quantidade total de pedidos criados"
+//        );
+//    }
+
+//    public void Increment()
+//    {
+//        _ordersCounter.Add(1);
+//    }
+//}

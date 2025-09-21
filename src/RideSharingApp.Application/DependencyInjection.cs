@@ -1,7 +1,9 @@
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using RideSharingApp.Application.Abstractions.Messaging;
+using RideSharingApp.Application.UseCases.Rides.Metrics;
 using RideSharingApp.SharedKernel.DomainEvents;
+using System.Diagnostics.Metrics;
 
 namespace RideSharingApp.Application;
 
@@ -10,6 +12,7 @@ public static class DependencyInjection
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
         services
+            .AddMeters()
             .AddScrutorScan()
             .AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly, includeInternalTypes: true);
 
@@ -33,6 +36,15 @@ public static class DependencyInjection
             .AddClasses(classes => classes.AssignableTo(typeof(IDomainEventHandler<>)), publicOnly: false)
             .AsImplementedInterfaces()
             .WithScopedLifetime());
+
+        return services;
+    }
+
+    private static IServiceCollection AddMeters(this IServiceCollection services)
+    {
+        services.AddSingleton<Meter>(sp => new Meter("RideSharingAppApiMetrics"));
+
+        services.AddScoped<INewRides, NewRides>();
 
         return services;
     }
